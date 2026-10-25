@@ -7,7 +7,19 @@ import {
   CutoffType
 } from '../types/api';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
+// Resolve API base URL: respects VITE_API_BASE_URL in production,
+// defaults to deployed backend host in production, or uses dev proxy in local development.
+const getApiBaseUrl = (): string => {
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL.replace(/\/$/, '');
+  }
+  if (import.meta.env.PROD) {
+    return 'https://windscope-uk-backend.onrender.com';
+  }
+  return '';
+};
+
+const API_BASE = getApiBaseUrl();
 
 class ApiError extends Error {
   constructor(public status: number, message: string) {

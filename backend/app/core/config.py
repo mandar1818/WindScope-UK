@@ -1,5 +1,6 @@
 from enum import Enum
-from typing import List
+from typing import List, Union
+from pydantic import field_validator
 from pydantic_settings import BaseSettings
 
 
@@ -33,6 +34,8 @@ class Settings(BaseSettings):
     CACHE_DIR: str = ".cache"
     CACHE_TTL_SECONDS: int = 3600  # 1 hour cache for historical API payloads
 
+    PORT: int = 8000
+
     # CORS
     CORS_ORIGINS: List[str] = [
         "http://localhost:5173",
@@ -42,6 +45,20 @@ class Settings(BaseSettings):
         "http://localhost:8080",
         "*"
     ]
+
+    @field_validator("CORS_ORIGINS", mode="before")
+    @classmethod
+    def parse_cors_origins(cls, v):
+        if isinstance(v, str):
+            v_str = v.strip()
+            if v_str.startswith("[") and v_str.endswith("]"):
+                import json
+                try:
+                    return json.loads(v_str)
+                except Exception:
+                    pass
+            return [origin.strip() for origin in v_str.split(",") if origin.strip()]
+        return v
 
     # Explicit Demo fallback mode if external API is unreachable
     ALLOW_DEMO_FALLBACK: bool = True

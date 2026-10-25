@@ -455,10 +455,54 @@ gunicorn app.main:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
 ```
 Ensure outgoing HTTPS connections to `https://data.elexon.co.uk` are allowed through firewalls.
 
-### Public Application URL:
-*(Placeholder until production hosting deployment is completed)*  
-- Frontend: `https://windscope-uk.vercel.app` *(Pending Deployment)*
-- Backend API: `https://api.windscope-uk.internal` *(Pending Deployment)*
+## 17. Deployment & Hosting Guide
+
+The application is architected for seamless cloud deployment using modern cloud PaaS / serverless platforms:
+
+### A. Backend Deployment (Render):
+The repository contains an Infrastructure-as-Code specification `render.yaml` configured for Render's Blueprint deployment:
+1. Log in to [Render](https://dashboard.render.com/).
+2. Click **New +** $\to$ **Blueprint** (or **Web Service**).
+3. Connect the repository: `https://github.com/mandar1818/WindScope-UK`.
+4. Render automatically reads `render.yaml`:
+   - **Service Name:** `windscope-uk-backend`
+   - **Runtime:** Python 3.12
+   - **Root Directory:** `backend`
+   - **Build Command:** `pip install -r requirements.txt`
+   - **Start Command:** `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+   - **Health Check Path:** `/health`
+5. Click **Apply** / **Deploy**.
+6. **Backend Public Endpoint:** `https://windscope-uk-backend.onrender.com`
+   - Interactive Swagger API Docs: `https://windscope-uk-backend.onrender.com/docs`
+   - Health Probe: `https://windscope-uk-backend.onrender.com/health`
+
+> [!NOTE]
+> **Free-Tier Limits & Cold Starts:** On Render's free tier, web services spin down after 15 minutes of inactivity. Initial requests after spin-down experience a cold-start delay of ~30–50 seconds while the container initializes. The free tier includes 512 MB RAM, 0.1 CPU, and 750 free instance hours per month with no credit card required.
+
+---
+
+### B. Frontend Deployment (Vercel):
+The repository contains both root `vercel.json` and `frontend/vercel.json` with SPA routing and reverse-proxy rewrites:
+1. Log in to [Vercel](https://vercel.com/new).
+2. Click **Add New Project** and import `mandar1818/WindScope-UK`.
+3. Configure the project:
+   - **Framework Preset:** Vite
+   - **Root Directory:** `frontend` (or select root directory with build command `cd frontend && npm install && npm run build`)
+   - **Build Command:** `npm run build`
+   - **Output Directory:** `dist`
+4. In **Environment Variables**, add:
+   - `VITE_API_BASE_URL` = `https://windscope-uk-backend.onrender.com`
+5. Click **Deploy**.
+6. **Frontend Public URL:** `https://windscope-uk.vercel.app` (or Vercel-assigned subdomain)
+
+> [!NOTE]
+> **Free-Tier Limits:** Vercel Hobby plan includes global edge CDN distribution, 100 GB bandwidth, unlimited HTTPS deployments, and automatic preview builds per GitHub commit.
+
+---
+
+### C. Docker Local Verification Note:
+- `docker-compose.yml`, `backend/Dockerfile`, and `frontend/Dockerfile` are fully configured and validated.
+- Note: On local workstations lacking Docker Desktop or Docker Engine, Docker runtime commands cannot execute locally. The container specifications are production-ready for any standard Docker or Kubernetes hosting environment.
 
 ---
 

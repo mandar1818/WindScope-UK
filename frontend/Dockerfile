@@ -12,6 +12,10 @@ RUN npm ci || npm install
 # Copy source code and build config
 COPY . .
 
+# Optional build-time argument for API base URL (empty string defaults to relative reverse-proxy)
+ARG VITE_API_BASE_URL=""
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+
 # Build for production
 RUN npm run build
 

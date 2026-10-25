@@ -1,11 +1,15 @@
 {
-  "buildCommand": "cd frontend && npm run build",
+  "buildCommand": "cd frontend && npm install && npm run build",
   "outputDirectory": "frontend/dist",
   "framework": "vite",
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://YOUR_BACKEND_HOST/api/$1"
+      "destination": "https://windscope-uk-backend.onrender.com/api/$1"
+    },
+    {
+      "source": "/health",
+      "destination": "https://windscope-uk-backend.onrender.com/health"
     },
     {
       "source": "/(.*)",
@@ -13,4 +17,3 @@
     }
   ]
 }
-
