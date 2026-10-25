@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: windscope_backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - ELEXON_BASE_URL=https://data.elexon.co.uk/bmrs/api/v1
+      - ELEXON_TIMEOUT_SECONDS=30.0
+      - ELEXON_MAX_RETRIES=3
+      - DEFAULT_CUTOFF=day_ahead_1100
+      - ALLOW_DEMO_FALLBACK=true
+      - DEBUG=false
+    volumes:
+      - backend-cache:/app/.cache
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    networks:
+      - windscope-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: windscope_frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - windscope-network
+
+volumes:
+  backend-cache:
+    name: windscope_backend_cache
+
+networks:
+  windscope-network:
+    name: windscope_net
+    driver: bridge
