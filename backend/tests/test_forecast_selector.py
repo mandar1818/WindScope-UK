@@ -168,3 +168,4 @@ def test_forecast_waterfall_history(sample_delivery_time, sample_forecast_record
     
     ineligible_items = [p for p in publications if not p.is_eligible_under_cutoff]
     assert len(ineligible_items) == 4
+

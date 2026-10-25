@@ -27,3 +27,4 @@ describe('ProcurementExposureWidget Component', () => {
     expect(screen.getByText(/Illustrative wind forecast exposure only/i)).toBeInTheDocument();
   });
 });
+

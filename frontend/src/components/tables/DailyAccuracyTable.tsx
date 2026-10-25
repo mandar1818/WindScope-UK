@@ -115,3 +115,4 @@ export const DailyAccuracyTable: React.FC<DailyAccuracyTableProps> = ({
     </div>
   );
 };
+

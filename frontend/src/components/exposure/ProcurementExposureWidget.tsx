@@ -116,3 +116,4 @@ export const ProcurementExposureWidget: React.FC<ProcurementExposureWidgetProps>
     </div>
   );
 };
+

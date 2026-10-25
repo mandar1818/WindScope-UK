@@ -48,3 +48,4 @@ class ForecastPublication(BaseModel):
     is_eligible_under_cutoff: bool
     is_selected: bool
     lead_time_hours: float = Field(..., description="Hours between publication and delivery start")
+

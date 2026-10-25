@@ -151,3 +151,4 @@ def calculate_daily_breakdown(points: List[PairedGenerationPoint]) -> List[Daily
         )
         
     return daily_records
+

@@ -466,3 +466,4 @@ Ensure outgoing HTTPS connections to `https://data.elexon.co.uk` are allowed thr
 
 In compliance with assignment requirements:  
 AI tools, including **Google Antigravity** and **ChatGPT**, assisted with the architectural design, software development, documentation, and test suite implementation of this application.
+

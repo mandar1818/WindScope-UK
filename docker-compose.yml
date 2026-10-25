@@ -49,3 +49,4 @@ networks:
   windscope-network:
     name: windscope_net
     driver: bridge
+

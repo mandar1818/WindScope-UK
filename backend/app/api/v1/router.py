@@ -15,3 +15,4 @@ api_v1_router.include_router(generation_router)
 api_v1_router.include_router(accuracy_router)
 api_v1_router.include_router(forecast_history_router)
 api_v1_router.include_router(data_status_router)
+

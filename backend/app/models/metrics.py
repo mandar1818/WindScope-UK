@@ -45,3 +45,4 @@ class DailyAccuracyRecord(BaseModel):
     excluded_observations: int
     mean_actual_mw: Optional[float]
     mean_forecast_mw: Optional[float]
+

@@ -17,3 +17,4 @@ def setup_logger(name: str = "windscope") -> logging.Logger:
 
 
 logger = setup_logger()
+

@@ -107,3 +107,4 @@ async def get_forecast_history(
         total_publications=len(publications),
         is_demonstration_mode=is_demo
     )
+

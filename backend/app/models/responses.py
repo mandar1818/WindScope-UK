@@ -106,3 +106,4 @@ class DataStatusResponse(BaseModel):
     demonstration_notice: Optional[str] = None
     last_checked_utc: datetime
     available_cutoffs: List[CutoffDescription]
+

@@ -59,3 +59,4 @@ async def get_generation(
         points=paired_points,
         total_points=len(paired_points)
     )
+

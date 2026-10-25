@@ -18,3 +18,4 @@ async def get_health():
         "elexon_api_connected": elexon_live,
         "evaluation_scope": "January 2026 Delivery Periods"
     }
+

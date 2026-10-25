@@ -32,3 +32,4 @@ def get_cutoff_info(cutoff_type: CutoffType) -> CutoffDescription:
         if c.id == cutoff_type:
             return c
     return AVAILABLE_CUTOFFS[0]
+

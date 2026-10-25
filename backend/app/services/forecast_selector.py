@@ -141,7 +141,13 @@ def match_and_select_forecasts(
         delivery_utc = parse_to_utc(act.startTime)
         cutoff_time_utc = calculate_decision_cutoff_time(delivery_utc, cutoff_type)
         
+        # In Elexon BMRS WINDFOR, forecasts are published at hourly resolution (:00:00Z)
+        # representing expected generation across that delivery hour.
+        # Check exact half-hour match first; if absent, map to the enclosing delivery hour.
         candidate_forecasts = forecast_map.get(delivery_utc, [])
+        if not candidate_forecasts and delivery_utc.minute != 0:
+            hour_start = delivery_utc.replace(minute=0, second=0, microsecond=0)
+            candidate_forecasts = forecast_map.get(hour_start, [])
         
         # 1. Apply cutoff: exclude any forecast published strictly after cutoff
         eligible_forecasts = [
@@ -217,11 +223,17 @@ def build_forecast_history(
     delivery_utc = parse_to_utc(delivery_start_utc)
     cutoff_time_utc = calculate_decision_cutoff_time(delivery_utc, cutoff_type)
     
-    # Filter for forecasts targeting this delivery period
+    # Filter for forecasts targeting this delivery period (exact match or enclosing delivery hour)
     period_forecasts = [
         f for f in forecast_records 
         if parse_to_utc(f.startTime) == delivery_utc
     ]
+    if not period_forecasts and delivery_utc.minute != 0:
+        hour_start = delivery_utc.replace(minute=0, second=0, microsecond=0)
+        period_forecasts = [
+            f for f in forecast_records 
+            if parse_to_utc(f.startTime) == hour_start
+        ]
     
     # Sort chronologically by publishTime
     period_forecasts.sort(key=lambda f: parse_to_utc(f.publishTime))
@@ -253,3 +265,4 @@ def build_forecast_history(
         )
         
     return selected_record, latest_record, publications
+

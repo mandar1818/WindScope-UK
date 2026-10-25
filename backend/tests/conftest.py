@@ -77,3 +77,4 @@ def sample_forecast_records(sample_delivery_time) -> List[WindforRecord]:
             generation=15100.0
         ),
     ]
+

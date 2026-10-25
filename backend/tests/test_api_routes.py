@@ -150,3 +150,4 @@ async def test_demonstration_mode_fallback_notice():
         assert data["is_demonstration_mode"] is True
         assert data["demonstration_notice"] is not None
         assert "DEMONSTRATION MODE" in data["demonstration_notice"]
+

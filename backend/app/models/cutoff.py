@@ -1,13 +1,5 @@
-from enum import Enum
 from pydantic import BaseModel, Field
-
-
-class CutoffType(str, Enum):
-    DAY_AHEAD_1100 = "day_ahead_1100"   # Day D-1 at 11:00 London local time (EPEX/Nord Pool GB auction order book closure)
-    DAY_AHEAD_1200 = "day_ahead_1200"   # Day D-1 at 12:00 London local time (Noon cutoff)
-    DAY_AHEAD_1700 = "day_ahead_1700"   # Day D-1 at 17:00 London local time (Evening schedule freeze / PN submission)
-    GATE_CLOSURE_1H = "gate_closure_1h"  # Intraday Gate Closure: exactly 1 hour prior to settlement period start
-    GATE_CLOSURE_2H = "gate_closure_2h"  # Intraday 2 hours prior to settlement period start
+from app.core.config import CutoffType
 
 
 class CutoffDescription(BaseModel):
@@ -49,3 +41,4 @@ AVAILABLE_CUTOFFS = [
         market_relevance="Intraday continuous trading benchmark window for balancing and battery/storage dispatch."
     ),
 ]
+

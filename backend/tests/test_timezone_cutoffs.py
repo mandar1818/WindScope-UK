@@ -56,3 +56,4 @@ def test_end_of_day_transition_cutoff():
     sp48_utc = datetime(2026, 1, 15, 23, 30, 0, tzinfo=UTC_TZ)
     cutoff = calculate_decision_cutoff_time(sp48_utc, CutoffType.DAY_AHEAD_1100)
     assert cutoff == datetime(2026, 1, 14, 11, 0, 0, tzinfo=UTC_TZ)
+

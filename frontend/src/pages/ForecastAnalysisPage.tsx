@@ -253,3 +253,4 @@ export const ForecastAnalysisPage: React.FC = () => {
     </div>
   );
 };
+

@@ -151,3 +151,4 @@ def test_daily_accuracy_breakdown():
     assert breakdown[1].valid_observations == 1
     assert breakdown[1].mae_mw == 200.0
     assert breakdown[1].bias_mw == -200.0
+

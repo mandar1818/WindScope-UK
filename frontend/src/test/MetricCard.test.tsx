@@ -44,3 +44,4 @@ describe('MetricCard Component', () => {
     expect(screen.getByText('N/A')).toBeInTheDocument();
   });
 });
+

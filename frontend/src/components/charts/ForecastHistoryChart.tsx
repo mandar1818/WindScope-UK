@@ -176,3 +176,4 @@ export const ForecastHistoryChart: React.FC<ForecastHistoryChartProps> = ({
     </div>
   );
 };
+

@@ -35,3 +35,4 @@ async def get_data_status():
         last_checked_utc=datetime.now(timezone.utc),
         available_cutoffs=AVAILABLE_CUTOFFS
     )
+

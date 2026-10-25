@@ -23,3 +23,4 @@ describe('CutoffSelector Component', () => {
     expect(handleChange).toHaveBeenCalledWith('day_ahead_1200');
   });
 });
+

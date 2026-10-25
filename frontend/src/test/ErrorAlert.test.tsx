@@ -23,3 +23,4 @@ describe('ErrorAlert Component', () => {
     expect(handleRetry).toHaveBeenCalledTimes(1);
   });
 });
+
