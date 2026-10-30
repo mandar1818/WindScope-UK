@@ -1,25 +1,50 @@
 import React, { useState } from 'react';
 import { PairedGenerationPoint } from '../../types/api';
-import { Download, Search, Filter } from 'lucide-react';
+import {
+  Download,
+  Search,
+  Filter,
+  ArrowUpDown,
+  ChevronLeft,
+  ChevronRight,
+  Database,
+  FileSpreadsheet,
+  CheckCircle2,
+  AlertTriangle,
+} from 'lucide-react';
 
 interface DataTableProps {
   points: PairedGenerationPoint[];
   title?: string;
 }
 
+type SortField = 'settlement_period' | 'actual_generation_mw' | 'forecast_generation_mw' | 'error_mw';
+type SortOrder = 'asc' | 'desc';
+
 export const DataTable: React.FC<DataTableProps> = ({
   points,
-  title = 'Half-Hourly Generation & Forecast Observations (30-Minute Resolution)'
+  title = 'Half-Hourly Generation & Forecast Observations (30-Minute Resolution)',
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'VALID' | 'MISSING_FORECAST' | 'MISSING_ACTUAL'>('ALL');
+  const [sortField, setSortField] = useState<SortField>('settlement_period');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
   const [page, setPage] = useState(1);
   const pageSize = 24;
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortOrder('asc');
+    }
+  };
 
   const filteredPoints = points.filter((p) => {
     const matchesSearch =
       p.settlement_date.includes(searchTerm) ||
-      p.start_time_local.includes(searchTerm) ||
+      p.start_time_local.toLowerCase().includes(searchTerm.toLowerCase()) ||
       String(p.settlement_period).includes(searchTerm);
 
     const matchesStatus =
@@ -28,8 +53,18 @@ export const DataTable: React.FC<DataTableProps> = ({
     return matchesSearch && matchesStatus;
   });
 
-  const totalPages = Math.ceil(filteredPoints.length / pageSize) || 1;
-  const paginatedPoints = filteredPoints.slice((page - 1) * pageSize, page * pageSize);
+  const sortedPoints = [...filteredPoints].sort((a, b) => {
+    let aVal = a[sortField];
+    let bVal = b[sortField];
+    if (aVal === null || aVal === undefined) aVal = -999999;
+    if (bVal === null || bVal === undefined) bVal = -999999;
+    if (aVal < bVal) return sortOrder === 'asc' ? -1 : 1;
+    if (aVal > bVal) return sortOrder === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  const totalPages = Math.ceil(sortedPoints.length / pageSize) || 1;
+  const paginatedPoints = sortedPoints.slice((page - 1) * pageSize, page * pageSize);
 
   const exportCsv = () => {
     const headers = [
@@ -42,10 +77,10 @@ export const DataTable: React.FC<DataTableProps> = ({
       'Forecast Publish Time (London)',
       'Decision Cutoff Applied (London)',
       'Forecast Error (MW)',
-      'Status'
+      'Status',
     ];
 
-    const rows = filteredPoints.map((p) => [
+    const rows = sortedPoints.map((p) => [
       p.settlement_date,
       p.settlement_period,
       `"${p.start_time_local}"`,
@@ -55,7 +90,7 @@ export const DataTable: React.FC<DataTableProps> = ({
       `"${p.forecast_publish_time_local ?? ''}"`,
       `"${p.decision_cutoff_time_local}"`,
       p.error_mw ?? '',
-      p.status
+      p.status,
     ]);
 
     const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
@@ -70,32 +105,34 @@ export const DataTable: React.FC<DataTableProps> = ({
   };
 
   return (
-    <div className="rounded-xl border border-navy-700 bg-navy-900/90 shadow-xl overflow-hidden">
-      <div className="p-4 border-b border-navy-800 flex flex-col md:flex-row md:items-center justify-between gap-3">
+    <div className="rounded-lg border border-navy-700/80 bg-[#0c1427] shadow-xl overflow-hidden space-y-0">
+      {/* Table Toolbar */}
+      <div className="p-4 border-b border-navy-800 flex flex-col md:flex-row md:items-center justify-between gap-3 bg-navy-900/50">
         <div>
-          <h3 className="text-sm font-bold text-slate-100 tracking-wide">{title}</h3>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Showing matched FUELHH actual generation and WINDFOR point-in-time forecasts
+          <h3 className="text-sm font-bold text-slate-100 tracking-wide font-sans">{title}</h3>
+          <p className="text-xs text-slate-400 mt-0.5 font-sans">
+            Matched FUELHH actual metered generation and WINDFOR point-in-time forecasts
           </p>
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Search Box */}
           <div className="relative">
             <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-400" />
             <input
               type="text"
-              placeholder="Search period or time..."
+              placeholder="Search SP, time..."
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
                 setPage(1);
               }}
-              className="bg-navy-950 border border-navy-700 rounded-md pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-accent-teal font-sans w-48"
+              className="bg-navy-950 border border-navy-700 rounded-md pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-accent-teal font-sans w-40 sm:w-48"
             />
           </div>
 
-          <div className="flex items-center space-x-1 bg-navy-950 border border-navy-700 rounded-md p-0.5">
-            <Filter className="w-3 h-3 text-slate-400 ml-1.5" />
+          {/* Status Filter */}
+          <div className="flex items-center space-x-1 bg-navy-950 border border-navy-700 rounded-md p-0.5 text-xs font-mono">
             {(['ALL', 'VALID', 'MISSING_FORECAST'] as const).map((st) => (
               <button
                 key={st}
@@ -103,87 +140,119 @@ export const DataTable: React.FC<DataTableProps> = ({
                   setStatusFilter(st);
                   setPage(1);
                 }}
-                className={`px-2 py-1 text-[10px] font-mono rounded ${
+                className={`px-2 py-1 rounded text-[11px] transition-colors ${
                   statusFilter === st
-                    ? 'bg-navy-800 text-accent-cyan font-bold'
+                    ? 'bg-accent-teal text-navy-950 font-bold'
                     : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
-                {st}
+                {st === 'ALL' ? 'All' : st === 'VALID' ? 'Valid' : 'Missing Fc'}
               </button>
             ))}
           </div>
 
+          {/* Export CSV Button */}
           <button
             onClick={exportCsv}
-            className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-navy-800 hover:bg-navy-700 text-xs text-accent-teal font-medium border border-navy-700 transition-colors"
+            className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-navy-800 hover:bg-navy-700 text-xs font-medium text-slate-200 border border-navy-700 transition-colors font-sans"
+            title="Download complete filtered dataset as CSV"
           >
-            <Download className="w-3.5 h-3.5" />
+            <FileSpreadsheet className="w-3.5 h-3.5 text-accent-cyan" />
             <span>Export CSV</span>
           </button>
         </div>
       </div>
 
+      {/* Main Table Container */}
       <div className="overflow-x-auto">
         <table className="w-full text-left text-xs font-mono">
-          <thead className="bg-navy-950/90 text-slate-400 border-b border-navy-800">
+          <thead className="bg-[#070d19] text-slate-400 border-b border-navy-800">
             <tr>
-              <th className="py-2.5 px-3 font-semibold uppercase tracking-wider">SP</th>
-              <th className="py-2.5 px-3 font-semibold uppercase tracking-wider">Delivery Time (GMT)</th>
-              <th className="py-2.5 px-3 font-semibold uppercase tracking-wider text-right text-emerald-400">Actual (MW)</th>
-              <th className="py-2.5 px-3 font-semibold uppercase tracking-wider text-right text-cyan-400">Forecast (MW)</th>
-              <th className="py-2.5 px-3 font-semibold uppercase tracking-wider text-right">Error (MW)</th>
-              <th className="py-2.5 px-3 font-semibold uppercase tracking-wider">Publication Timestamp</th>
-              <th className="py-2.5 px-3 font-semibold uppercase tracking-wider">Cutoff Applied</th>
-              <th className="py-2.5 px-3 font-semibold uppercase tracking-wider text-center">Status</th>
+              <th
+                onClick={() => handleSort('settlement_period')}
+                className="py-2.5 px-3 font-semibold uppercase text-[10px] cursor-pointer hover:text-slate-200 transition-colors"
+              >
+                <div className="flex items-center space-x-1">
+                  <span>SP</span>
+                  <ArrowUpDown className="w-3 h-3" />
+                </div>
+              </th>
+              <th className="py-2.5 px-3 font-semibold uppercase text-[10px]">Delivery Time (London GMT)</th>
+              <th className="py-2.5 px-3 font-semibold uppercase text-[10px]">Delivery (UTC)</th>
+              <th
+                onClick={() => handleSort('actual_generation_mw')}
+                className="py-2.5 px-3 font-semibold uppercase text-[10px] text-right text-emerald-400 cursor-pointer hover:text-emerald-300 transition-colors"
+              >
+                <div className="flex items-center justify-end space-x-1">
+                  <span>Actual Outturn</span>
+                  <ArrowUpDown className="w-3 h-3" />
+                </div>
+              </th>
+              <th
+                onClick={() => handleSort('forecast_generation_mw')}
+                className="py-2.5 px-3 font-semibold uppercase text-[10px] text-right text-cyan-400 cursor-pointer hover:text-cyan-300 transition-colors"
+              >
+                <div className="flex items-center justify-end space-x-1">
+                  <span>Forecast</span>
+                  <ArrowUpDown className="w-3 h-3" />
+                </div>
+              </th>
+              <th className="py-2.5 px-3 font-semibold uppercase text-[10px]">Forecast Published (GMT)</th>
+              <th
+                onClick={() => handleSort('error_mw')}
+                className="py-2.5 px-3 font-semibold uppercase text-[10px] text-right cursor-pointer hover:text-slate-200 transition-colors"
+              >
+                <div className="flex items-center justify-end space-x-1">
+                  <span>Error (Fc - Act)</span>
+                  <ArrowUpDown className="w-3 h-3" />
+                </div>
+              </th>
+              <th className="py-2.5 px-3 font-semibold uppercase text-[10px] text-center">Status</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-navy-800/60">
+          <tbody className="divide-y divide-navy-850">
             {paginatedPoints.length === 0 ? (
               <tr>
-                <td colSpan={8} className="py-8 text-center text-slate-500 italic font-sans">
-                  No matching observations found.
+                <td colSpan={8} className="py-8 text-center text-slate-500 italic font-sans text-xs">
+                  No delivery periods match the selected query or filters.
                 </td>
               </tr>
             ) : (
-              paginatedPoints.map((p, idx) => {
-                const act = p.actual_generation_mw;
-                const fc = p.forecast_generation_mw;
+              paginatedPoints.map((p) => {
                 const err = p.error_mw;
-
                 return (
-                  <tr key={`${p.settlement_date}-${p.settlement_period}-${idx}`} className="hover:bg-navy-800/40">
-                    <td className="py-2 px-3 text-slate-300 font-bold">{p.settlement_period}</td>
-                    <td className="py-2 px-3 text-slate-300 font-sans">{p.start_time_local}</td>
-                    <td className="py-2 px-3 text-right text-emerald-400 font-bold">
-                      {act !== null ? `${act.toLocaleString()} MW` : <span className="text-slate-600">Missing</span>}
+                  <tr key={p.settlement_period} className="hover:bg-navy-850/50 transition-colors">
+                    <td className="py-2 px-3 font-bold text-slate-300">{p.settlement_period}</td>
+                    <td className="py-2 px-3 text-slate-200 font-sans">{p.start_time_local}</td>
+                    <td className="py-2 px-3 text-slate-400">{p.start_time}</td>
+                    <td className="py-2 px-3 text-right font-bold text-emerald-400">
+                      {p.actual_generation_mw !== null ? `${p.actual_generation_mw.toLocaleString()} MW` : 'Missing'}
                     </td>
-                    <td className="py-2 px-3 text-right text-cyan-400 font-bold">
-                      {fc !== null ? `${fc.toLocaleString()} MW` : <span className="text-slate-600">Missing</span>}
+                    <td className="py-2 px-3 text-right font-bold text-cyan-400">
+                      {p.forecast_generation_mw !== null ? `${p.forecast_generation_mw.toLocaleString()} MW` : 'Missing'}
+                    </td>
+                    <td className="py-2 px-3 text-slate-400 font-sans">
+                      {p.forecast_publish_time_local ?? 'None Eligible'}
                     </td>
                     <td className="py-2 px-3 text-right font-bold">
                       {err !== null ? (
-                        <span className={err > 0 ? 'text-amber-400' : err < 0 ? 'text-cyan-400' : 'text-slate-400'}>
+                        <span className={err > 0 ? 'text-amber-400' : err < 0 ? 'text-cyan-300' : 'text-slate-400'}>
                           {err > 0 ? `+${err.toLocaleString()}` : err.toLocaleString()} MW
                         </span>
                       ) : (
                         <span className="text-slate-600">-</span>
                       )}
                     </td>
-                    <td className="py-2 px-3 text-slate-400 text-[11px]">
-                      {p.forecast_publish_time_local ?? <span className="text-slate-600">None</span>}
-                    </td>
-                    <td className="py-2 px-3 text-slate-500 text-[11px]">{p.decision_cutoff_time_local}</td>
                     <td className="py-2 px-3 text-center">
-                      <span
-                        className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-bold ${
-                          p.status === 'VALID'
-                            ? 'bg-emerald-950 text-emerald-400 border border-emerald-800'
-                            : 'bg-amber-950 text-amber-400 border border-amber-800'
-                        }`}
-                      >
-                        {p.status}
-                      </span>
+                      {p.is_valid_pair ? (
+                        <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-sans">
+                          <CheckCircle2 className="w-3 h-3" /> Valid
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-800 font-sans">
+                          <AlertTriangle className="w-3 h-3" /> {p.status}
+                        </span>
+                      )}
                     </td>
                   </tr>
                 );
@@ -193,33 +262,33 @@ export const DataTable: React.FC<DataTableProps> = ({
         </table>
       </div>
 
-      {totalPages > 1 && (
-        <div className="p-3 bg-navy-950/80 border-t border-navy-800 flex items-center justify-between text-xs text-slate-400 font-mono">
-          <div>
-            Showing {(page - 1) * pageSize + 1} to {Math.min(page * pageSize, filteredPoints.length)} of {filteredPoints.length} observations
-          </div>
-          <div className="flex items-center space-x-1.5">
-            <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="px-2.5 py-1 rounded bg-navy-800 hover:bg-navy-700 disabled:opacity-40 disabled:cursor-not-allowed border border-navy-700"
-            >
-              Previous
-            </button>
-            <span className="px-2 font-bold text-slate-300">
-              {page} / {totalPages}
-            </span>
-            <button
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
-              className="px-2.5 py-1 rounded bg-navy-800 hover:bg-navy-700 disabled:opacity-40 disabled:cursor-not-allowed border border-navy-700"
-            >
-              Next
-            </button>
-          </div>
+      {/* Pagination Footer */}
+      <div className="p-3 border-t border-navy-800 bg-[#070d19] flex items-center justify-between text-xs font-mono text-slate-400">
+        <div>
+          Showing {paginatedPoints.length > 0 ? (page - 1) * pageSize + 1 : 0} to{' '}
+          {Math.min(page * pageSize, sortedPoints.length)} of {sortedPoints.length} settlement periods
         </div>
-      )}
+
+        <div className="flex items-center space-x-1.5">
+          <button
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className="p-1 rounded bg-navy-900 border border-navy-700 text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-navy-800 transition-colors"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          <span className="px-2 text-slate-300">
+            Page {page} of {totalPages}
+          </span>
+          <button
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page >= totalPages}
+            className="p-1 rounded bg-navy-900 border border-navy-700 text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-navy-800 transition-colors"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
-
