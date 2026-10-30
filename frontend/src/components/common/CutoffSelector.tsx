@@ -23,7 +23,7 @@ const CUTOFF_OPTIONS: { id: CutoffType; label: string; short: string; badge: str
   },
   {
     id: 'day_ahead_1700',
-    label: 'Day-Ahead 17:00 GMT (Evening Freeze / PN)',
+    label: 'Day-Ahead 17:00 GMT (Physical Notification)',
     short: 'DA 17:00',
     badge: 'Physical Notification'
   },
@@ -49,9 +49,9 @@ export const CutoffSelector: React.FC<CutoffSelectorProps> = ({
   const currentOption = CUTOFF_OPTIONS.find((c) => c.id === selectedCutoff) || CUTOFF_OPTIONS[0];
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 bg-navy-900/80 p-2.5 rounded-lg border border-navy-700">
-      <div className="flex items-center space-x-1.5 text-xs font-semibold uppercase tracking-wider text-slate-300">
-        <Clock className="w-4 h-4 text-accent-teal" />
+    <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 bg-[#0e1526] p-2.5 rounded-lg border border-slate-800">
+      <div className="flex items-center space-x-1.5 text-xs font-medium text-slate-300">
+        <Clock className="w-3.5 h-3.5 text-sky-400" />
         <span>Decision Cutoff:</span>
       </div>
 
@@ -63,10 +63,10 @@ export const CutoffSelector: React.FC<CutoffSelectorProps> = ({
               key={opt.id}
               disabled={disabled}
               onClick={() => onChange(opt.id)}
-              className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${
+              className={`px-2.5 py-1 text-xs font-medium rounded transition-colors ${
                 isSelected
-                  ? 'bg-accent-teal text-navy-950 font-bold shadow-md shadow-cyan-950/50 ring-1 ring-cyan-300'
-                  : 'bg-navy-800 text-slate-300 hover:bg-navy-700 hover:text-slate-100 border border-navy-700/60'
+                  ? 'bg-sky-900/70 text-sky-200 border border-sky-600 font-semibold'
+                  : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-slate-200 border border-slate-700/60'
               } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
               title={opt.label}
             >
@@ -76,10 +76,9 @@ export const CutoffSelector: React.FC<CutoffSelectorProps> = ({
         })}
       </div>
 
-      <div className="hidden lg:block text-[11px] text-accent-cyan font-mono px-2 py-0.5 rounded bg-cyan-950/60 border border-cyan-800/50">
+      <div className="hidden lg:block text-[11px] text-slate-400 font-mono px-2 py-0.5 rounded bg-slate-900 border border-slate-800">
         {currentOption.badge}
       </div>
     </div>
   );
 };
-

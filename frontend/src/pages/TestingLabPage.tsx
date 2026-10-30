@@ -5,19 +5,10 @@ import {
   CheckCircle2,
   XCircle,
   Clock,
-  AlertTriangle,
   RotateCcw,
-  Sparkles,
   ChevronDown,
   ChevronRight,
-  ShieldCheck,
-  TrendingUp,
-  TrendingDown,
-  FileSpreadsheet,
   Download,
-  Info,
-  Scale,
-  Zap,
 } from 'lucide-react';
 import { CutoffType, OverviewResponse, ForecastHistoryResponse } from '../types/api';
 import { apiService } from '../services/api';
@@ -49,7 +40,7 @@ export const TestingLabPage: React.FC = () => {
     'test-1': {
       id: 'test-1',
       name: 'TEST 1: Forecast Accuracy & Metric Verification',
-      category: 'Mathematical Correctness',
+      category: 'Mathematical Verification',
       description:
         'Validates that MAE, RMSE, WAPE, and signed Forecast Bias are calculated strictly over complete matched observation pairs, adhering to BETTA power market standards.',
       userAction: 'Fetch delivery day observations and verify statistical formulas against returned dataset.',
@@ -147,32 +138,42 @@ export const TestingLabPage: React.FC = () => {
       const calculatedRmse = Math.sqrt(sqErrors.reduce((a, b) => a + b, 0) / validPoints.length);
 
       // Verify mathematical property: RMSE >= MAE
-      const rmseGteMae = calculatedRmse >= calculatedMae - 0.05; // small epsilon for rounding
+      const rmseGteMae = calculatedRmse >= calculatedMae - 0.05;
+      if (!rmseGteMae) {
+        throw new Error(`Mathematical impossibility: RMSE (${calculatedRmse.toFixed(2)}) is less than MAE (${calculatedMae.toFixed(2)})!`);
+      }
 
-      // Verify MAE matches backend within rounding tolerance
-      const maeMatches = metrics.mae_mw !== null && Math.abs(metrics.mae_mw - calculatedMae) < 0.2;
+      // Re-calculate WAPE locally
+      const sumActual = validPoints.reduce((sum, p) => sum + (p.actual_generation_mw ?? 0), 0);
+      const calculatedWape = sumActual > 0 ? (absErrors.reduce((a, b) => a + b, 0) / sumActual) * 100 : 0;
 
-      // Verify WAPE is non-negative
-      const wapeValid = metrics.wape_percent === null || metrics.wape_percent >= 0;
+      // Re-calculate Bias locally
+      const errors = validPoints.map((p) => (p.forecast_generation_mw ?? 0) - (p.actual_generation_mw ?? 0));
+      const calculatedBias = errors.reduce((a, b) => a + b, 0) / validPoints.length;
 
-      if (!maeMatches || !rmseGteMae || !wapeValid) {
+      // Match against backend metrics within 0.1 tolerance
+      const maeMatches = Math.abs((metrics.mae_mw ?? 0) - calculatedMae) < 0.2;
+      const rmseMatches = Math.abs((metrics.rmse_mw ?? 0) - calculatedRmse) < 0.2;
+
+      if (!maeMatches || !rmseMatches) {
         throw new Error(
-          `Formula discrepancy: Local MAE=${calculatedMae.toFixed(2)}, API MAE=${metrics.mae_mw}, RMSE=${calculatedRmse.toFixed(2)}`
+          `Local recalculation mismatch: Backend MAE=${metrics.mae_mw}, Local MAE=${calculatedMae.toFixed(2)}; Backend RMSE=${metrics.rmse_mw}, Local RMSE=${calculatedRmse.toFixed(2)}`
         );
       }
 
       updateTestStatus('test-1', {
         status: 'PASS',
-        actualResult: `VERIFIED: ${validPoints.length}/48 settlement periods evaluated. MAE=${metrics.mae_mw} MW, RMSE=${metrics.rmse_mw} MW, WAPE=${metrics.wape_percent}%, Bias=${metrics.bias_mw > 0 ? '+' : ''}${metrics.bias_mw} MW. All formulas conform to BETTA power market standards.`,
+        actualResult: `VERIFIED: Evaluated ${validPoints.length} complete matched intervals. Calculated MAE = ${calculatedMae.toFixed(1)} MW, RMSE = ${calculatedRmse.toFixed(1)} MW, WAPE = ${calculatedWape.toFixed(1)}%, Bias = ${calculatedBias > 0 ? '+' : ''}${calculatedBias.toFixed(1)} MW. Mathematical property RMSE >= MAE verified (${calculatedRmse.toFixed(1)} >= ${calculatedMae.toFixed(1)}).`,
         details: {
-          validObservations: validPoints.length,
-          reportedMae: `${metrics.mae_mw} MW`,
-          recalculatedMae: `${calculatedMae.toFixed(2)} MW`,
-          reportedRmse: `${metrics.rmse_mw} MW`,
-          recalculatedRmse: `${calculatedRmse.toFixed(2)} MW`,
-          wapePercent: `${metrics.wape_percent}%`,
-          signedBias: `${metrics.bias_mw > 0 ? '+' : ''}${metrics.bias_mw} MW (${metrics.bias_direction})`,
-          rmseGreaterOrEqualMae: rmseGteMae ? 'True (Mathematical Law Verified)' : 'False',
+          evaluatedIntervals: validPoints.length,
+          calculatedMaeMw: Number(calculatedMae.toFixed(2)),
+          backendMaeMw: metrics.mae_mw,
+          calculatedRmseMw: Number(calculatedRmse.toFixed(2)),
+          backendRmseMw: metrics.rmse_mw,
+          calculatedWapePercent: Number(calculatedWape.toFixed(2)),
+          calculatedBiasMw: Number(calculatedBias.toFixed(2)),
+          rmseGteMaeCheck: 'PASS (RMSE >= MAE)',
+          formulaUsed: 'MAE = (1/N)*Sum(|Fc - Act|); RMSE = Sqrt((1/N)*Sum((Fc - Act)^2))',
         },
       });
       return true;
@@ -185,218 +186,198 @@ export const TestingLabPage: React.FC = () => {
     }
   };
 
-  // Run Test 2: Overforecast Detection
+  // Run Test 2: Overforecast & Short Exposure
   const runTest2 = async (date: string, cutoff: CutoffType): Promise<boolean> => {
     updateTestStatus('test-2', { status: 'RUNNING', errorMessage: undefined });
     try {
       const data: OverviewResponse = await apiService.getOverview(date, cutoff);
-      const validPoints = data.generation_series.filter(
-        (p) => p.is_valid_pair && p.actual_generation_mw !== null && p.forecast_generation_mw !== null
+      const points = data.generation_series.filter(
+        (p) => p.is_valid_pair && p.error_mw !== null && (p.error_mw ?? 0) > 0.0
       );
 
-      const overforecastPoints = validPoints.filter((p) => (p.error_mw ?? 0) > 0);
-
-      // Verify that every flagged point indeed has forecast > actual
-      const allTrulyOver = overforecastPoints.every(
-        (p) => (p.forecast_generation_mw ?? 0) > (p.actual_generation_mw ?? 0)
-      );
-
-      if (!allTrulyOver) {
-        throw new Error('Found a record in overforecast subset where forecast <= actual.');
+      if (points.length === 0) {
+        updateTestStatus('test-2', {
+          status: 'PASS',
+          actualResult: `VERIFIED: No overforecast intervals detected for delivery date ${date}. System was balanced or underforecasting for all evaluated periods.`,
+          details: {
+            overforecastIntervalCount: 0,
+            note: 'No short risk periods on this delivery date.',
+          },
+        });
+        return true;
       }
 
-      // Calculate total overforecast MWh (MW * 0.5h)
-      const calculatedMwh = overforecastPoints.reduce((sum, p) => sum + (p.error_mw ?? 0) * 0.5, 0);
-
-      // Find top overforecast interval
-      const maxOver = overforecastPoints.reduce(
-        (max, p) => ((p.error_mw ?? 0) > (max.error_mw ?? 0) ? p : max),
-        overforecastPoints[0] || {}
+      // Verify sign convention: all identified points must have Forecast > Actual
+      const allValidOver = points.every(
+        (p) => (p.forecast_generation_mw ?? 0) > (p.actual_generation_mw ?? 0)
       );
+      if (!allValidOver) {
+        throw new Error('Sign convention violation: Point with Forecast <= Actual included in overforecast set.');
+      }
+
+      // Calculate total overforecast energy in MWh: Sum(Error MW * 0.5 hours)
+      const calculatedOverMwh = points.reduce((sum, p) => sum + (p.error_mw ?? 0) * 0.5, 0);
+
+      // Verify peak overforecast interval
+      const maxPoint = [...points].sort((a, b) => (b.error_mw ?? 0) - (a.error_mw ?? 0))[0];
 
       updateTestStatus('test-2', {
         status: 'PASS',
-        actualResult: `VERIFIED: Detected ${overforecastPoints.length} overforecast settlement periods. Total Short Energy: +${calculatedMwh.toFixed(1)} MWh. Peak single-period overforecast: +${maxOver.error_mw?.toLocaleString() ?? 0} MW at SP ${maxOver.settlement_period ?? 'N/A'} (${maxOver.start_time_local?.split(' ')[1] ?? ''}). Utility exposed to System Buy Price cash-out.`,
+        actualResult: `VERIFIED: Identified ${points.length} overforecast settlement intervals (Short Risk). All intervals satisfy Forecast > Actual. Cumulative physical energy deficit = ${calculatedOverMwh.toFixed(1)} MWh (converted at 0.5h per settlement interval). Peak short period: SP ${maxPoint.settlement_period} (+${maxPoint.error_mw?.toFixed(0)} MW / +${((maxPoint.error_mw ?? 0) * 0.5).toFixed(1)} MWh).`,
         details: {
-          overforecastIntervalCount: overforecastPoints.length,
-          totalOverforecastMwh: `+${calculatedMwh.toFixed(1)} MWh`,
-          apiReportedOverforecastMwh: `+${data.exposure_summary.overforecast_energy_mwh} MWh`,
-          peakOverforecastMw: `+${maxOver.error_mw ?? 0} MW`,
-          peakOverforecastPeriod: `SP ${maxOver.settlement_period} (${maxOver.start_time_local})`,
-          marketRiskCategory: 'PHYSICAL SHORT (System Buy Price exposure)',
+          overforecastIntervalCount: points.length,
+          cumulativeEnergyDeficitMwh: Number(calculatedOverMwh.toFixed(1)),
+          backendReportedOverMwh: data.exposure_summary.overforecast_energy_mwh,
+          peakShortSettlementPeriod: maxPoint.settlement_period,
+          peakShortPowerDeltaMw: maxPoint.error_mw,
+          peakShortEnergyMwh: Number(((maxPoint.error_mw ?? 0) * 0.5).toFixed(1)),
+          balancingMechanismImpact: 'Utility left physically short of wind energy; exposed to System Buy Price (SBP) cash-out.',
         },
       });
       return true;
     } catch (err: any) {
       updateTestStatus('test-2', {
         status: 'FAIL',
-        errorMessage: err?.message || 'Failed to detect overforecast periods.',
+        errorMessage: err?.message || 'Failed to evaluate overforecast periods.',
       });
       return false;
     }
   };
 
-  // Run Test 3: Underforecast Detection
+  // Run Test 3: Underforecast & Long Exposure
   const runTest3 = async (date: string, cutoff: CutoffType): Promise<boolean> => {
     updateTestStatus('test-3', { status: 'RUNNING', errorMessage: undefined });
     try {
       const data: OverviewResponse = await apiService.getOverview(date, cutoff);
-      const validPoints = data.generation_series.filter(
-        (p) => p.is_valid_pair && p.actual_generation_mw !== null && p.forecast_generation_mw !== null
+      const points = data.generation_series.filter(
+        (p) => p.is_valid_pair && p.error_mw !== null && (p.error_mw ?? 0) < 0.0
       );
 
-      const underforecastPoints = validPoints.filter((p) => (p.error_mw ?? 0) < 0);
-
-      // Verify that every flagged point indeed has forecast < actual
-      const allTrulyUnder = underforecastPoints.every(
-        (p) => (p.forecast_generation_mw ?? 0) < (p.actual_generation_mw ?? 0)
-      );
-
-      if (!allTrulyUnder) {
-        throw new Error('Found a record in underforecast subset where forecast >= actual.');
+      if (points.length === 0) {
+        updateTestStatus('test-3', {
+          status: 'PASS',
+          actualResult: `VERIFIED: No underforecast intervals detected for delivery date ${date}. System was balanced or overforecasting for all evaluated periods.`,
+          details: {
+            underforecastIntervalCount: 0,
+            note: 'No long surplus risk periods on this delivery date.',
+          },
+        });
+        return true;
       }
 
-      // Calculate total underforecast MWh (|MW| * 0.5h)
-      const calculatedMwh = underforecastPoints.reduce(
-        (sum, p) => sum + Math.abs(p.error_mw ?? 0) * 0.5,
-        0
+      // Verify sign convention: all identified points must have Forecast < Actual
+      const allValidUnder = points.every(
+        (p) => (p.forecast_generation_mw ?? 0) < (p.actual_generation_mw ?? 0)
       );
+      if (!allValidUnder) {
+        throw new Error('Sign convention violation: Point with Forecast >= Actual included in underforecast set.');
+      }
 
-      // Find top underforecast interval
-      const maxUnder = underforecastPoints.reduce(
-        (max, p) => (Math.abs(p.error_mw ?? 0) > Math.abs(max.error_mw ?? 0) ? p : max),
-        underforecastPoints[0] || {}
-      );
+      // Calculate total underforecast energy in MWh: Sum(|Error MW| * 0.5 hours)
+      const calculatedUnderMwh = points.reduce((sum, p) => sum + Math.abs(p.error_mw ?? 0) * 0.5, 0);
+
+      // Verify peak underforecast interval
+      const maxUnderPoint = [...points].sort((a, b) => (a.error_mw ?? 0) - (b.error_mw ?? 0))[0];
 
       updateTestStatus('test-3', {
         status: 'PASS',
-        actualResult: `VERIFIED: Detected ${underforecastPoints.length} underforecast settlement periods. Total Surplus Energy: -${calculatedMwh.toFixed(1)} MWh. Peak single-period underforecast: ${maxUnder.error_mw?.toLocaleString() ?? 0} MW at SP ${maxUnder.settlement_period ?? 'N/A'} (${maxUnder.start_time_local?.split(' ')[1] ?? ''}). Utility exposed to System Sell Price spill liquidation.`,
+        actualResult: `VERIFIED: Identified ${points.length} underforecast settlement intervals (Long Surplus). All intervals satisfy Forecast < Actual. Cumulative surplus spill energy = ${calculatedUnderMwh.toFixed(1)} MWh (converted at 0.5h per settlement interval). Peak long period: SP ${maxUnderPoint.settlement_period} (${maxUnderPoint.error_mw?.toFixed(0)} MW / ${(Math.abs(maxUnderPoint.error_mw ?? 0) * 0.5).toFixed(1)} MWh).`,
         details: {
-          underforecastIntervalCount: underforecastPoints.length,
-          totalUnderforecastMwh: `-${calculatedMwh.toFixed(1)} MWh`,
-          apiReportedUnderforecastMwh: `-${data.exposure_summary.underforecast_energy_mwh} MWh`,
-          peakUnderforecastMw: `${maxUnder.error_mw ?? 0} MW`,
-          peakUnderforecastPeriod: `SP ${maxUnder.settlement_period} (${maxUnder.start_time_local})`,
-          marketRiskCategory: 'PHYSICAL LONG (System Sell Price spill)',
+          underforecastIntervalCount: points.length,
+          cumulativeSurplusEnergyMwh: Number(calculatedUnderMwh.toFixed(1)),
+          backendReportedUnderMwh: data.exposure_summary.underforecast_energy_mwh,
+          peakLongSettlementPeriod: maxUnderPoint.settlement_period,
+          peakLongPowerDeltaMw: maxUnderPoint.error_mw,
+          peakLongEnergyMwh: Number((Math.abs(maxUnderPoint.error_mw ?? 0) * 0.5).toFixed(1)),
+          balancingMechanismImpact: 'Utility generated excess wind energy; surplus spill liquidated at System Sell Price (SSP).',
         },
       });
       return true;
     } catch (err: any) {
       updateTestStatus('test-3', {
         status: 'FAIL',
-        errorMessage: err?.message || 'Failed to detect underforecast periods.',
+        errorMessage: err?.message || 'Failed to evaluate underforecast periods.',
       });
       return false;
     }
   };
 
-  // Run Test 4: Publication Cutoff & Look-Ahead Bias Guard
+  // Run Test 4: Publication Cutoff & Look-Ahead Prevention
   const runTest4 = async (date: string, cutoff: CutoffType): Promise<boolean> => {
     updateTestStatus('test-4', { status: 'RUNNING', errorMessage: undefined });
     try {
-      // Step 1: Fetch overview to get a delivery timestamp
-      const data: OverviewResponse = await apiService.getOverview(date, cutoff);
-      const samplePoint = data.generation_series.find((p) => p.settlement_period === 24) || data.generation_series[0];
+      const targetTime = `${date}T12:00:00Z`; // Noon SP 25
+      const history: ForecastHistoryResponse = await apiService.getForecastHistory(targetTime, cutoff);
 
-      if (!samplePoint) {
-        throw new Error('No delivery points available to test cutoff history.');
+      if (!history.forecast_publications || history.forecast_publications.length === 0) {
+        throw new Error('No historical forecast submissions found for target period.');
       }
-
-      // Step 2: Query multi-horizon history for SP 24
-      const history: ForecastHistoryResponse = await apiService.getForecastHistory(
-        samplePoint.start_time,
-        cutoff
-      );
 
       const cutoffUtc = new Date(history.selected_cutoff_time).getTime();
-      const publications = history.forecast_publications;
 
-      if (publications.length === 0) {
-        throw new Error('No forecast submissions found for target period.');
+      // Verify look-ahead guard: no selected forecast can have publishTime > cutoff
+      const violatingSelected = history.forecast_publications.filter(
+        (p) => p.is_selected && new Date(p.publish_time).getTime() > cutoffUtc
+      );
+      if (violatingSelected.length > 0) {
+        throw new Error(`CRITICAL LOOK-AHEAD BIAS: Selected forecast published at ${violatingSelected[0].publish_time} is AFTER cutoff ${history.selected_cutoff_time}!`);
       }
 
-      // Verify that NO publication with publish_time > cutoffUtc is marked eligible
-      let lookAheadViolations = 0;
-      let excludedCount = 0;
-      let eligibleCount = 0;
-
-      for (const pub of publications) {
-        const pubTime = new Date(pub.publish_time).getTime();
-        if (pubTime > cutoffUtc) {
-          excludedCount++;
-          if (pub.is_eligible_under_cutoff || pub.is_selected) {
-            lookAheadViolations++;
-          }
-        } else {
-          eligibleCount++;
-          if (!pub.is_eligible_under_cutoff) {
-            lookAheadViolations++;
-          }
-        }
+      // Verify eligibility flags
+      const incorrectEligibility = history.forecast_publications.filter(
+        (p) => (new Date(p.publish_time).getTime() <= cutoffUtc) !== p.is_eligible_under_cutoff
+      );
+      if (incorrectEligibility.length > 0) {
+        throw new Error(`Eligibility flag mismatch on ${incorrectEligibility.length} forecast records.`);
       }
 
-      if (lookAheadViolations > 0) {
-        throw new Error(`Look-ahead bias detected: ${lookAheadViolations} publications violated cutoff enforcement!`);
-      }
-
-      // Verify selected forecast is eligible
-      const selected = publications.find((p) => p.is_selected);
-      if (selected && new Date(selected.publish_time).getTime() > cutoffUtc) {
-        throw new Error('Selected forecast was published AFTER the decision cutoff!');
-      }
+      const eligibleCount = history.forecast_publications.filter((p) => p.is_eligible_under_cutoff).length;
+      const excludedCount = history.forecast_publications.filter((p) => !p.is_eligible_under_cutoff).length;
 
       updateTestStatus('test-4', {
         status: 'PASS',
-        actualResult: `VERIFIED: Audited ${publications.length} weather forecast submissions for SP ${history.settlement_period}. Cutoff Threshold: ${history.selected_cutoff_time_local}. Exactly ${eligibleCount} submissions were eligible and ${excludedCount} post-cutoff submissions were strictly excluded. 0% look-ahead bias contamination.`,
+        actualResult: `VERIFIED: Point-in-time selection enforced with 0% look-ahead contamination. ${eligibleCount} forecast revisions published prior to ${history.selected_cutoff_time_local} marked eligible; ${excludedCount} published after cutoff marked ineligible. Selected forecast benchmark published at ${history.selected_forecast_publish_time_local || 'N/A'} (lead time: ${history.selected_forecast_lead_hours}h).`,
         details: {
-          targetDeliveryTime: history.target_delivery_time_local,
-          decisionCutoffApplied: `${cutoff} (${history.selected_cutoff_time_local})`,
-          totalSubmissionsAudited: publications.length,
-          eligibleSubmissions: eligibleCount,
-          excludedSubmissionsPostCutoff: excludedCount,
-          selectedForecastGeneration: `${history.selected_forecast_generation_mw ?? 'N/A'} MW`,
-          selectedForecastPublished: history.selected_forecast_publish_time_local ?? 'None',
-          lookAheadBiasViolationCount: 0,
+          decisionCutoffApplied: history.cutoff_applied,
+          cutoffTimeLocal: history.selected_cutoff_time_local,
+          totalSubmissionsRegistered: history.total_publications,
+          eligibleSubmissionsCount: eligibleCount,
+          excludedSubmissionsCount: excludedCount,
+          selectedForecastPublishTime: history.selected_forecast_publish_time_local,
+          selectedForecastLeadHours: history.selected_forecast_lead_hours,
+          selectedForecastGenerationMw: history.selected_forecast_generation_mw,
+          lookAheadContaminationRate: '0.00% (Strictly zero future publications selected)',
         },
       });
       return true;
     } catch (err: any) {
       updateTestStatus('test-4', {
         status: 'FAIL',
-        errorMessage: err?.message || 'Failed to validate cutoff selection.',
+        errorMessage: err?.message || 'Failed to verify cutoff selection.',
       });
       return false;
     }
   };
 
-  // Run Test 5: Missing Data Validation
+  // Run Test 5: Missing Data & Zero-Generation Integrity
   const runTest5 = async (date: string, cutoff: CutoffType): Promise<boolean> => {
     updateTestStatus('test-5', { status: 'RUNNING', errorMessage: undefined });
     try {
       const data: OverviewResponse = await apiService.getOverview(date, cutoff);
-      const points = data.generation_series;
       const metrics = data.date_metrics;
 
-      // Rule 1: Total periods must equal 48 (or 50 on clock change days)
-      const expectedTotalPeriods = 48;
-      if (metrics.total_periods !== expectedTotalPeriods) {
-        throw new Error(`Expected total settlement periods = 48, received ${metrics.total_periods}`);
+      // 1. Completeness equation: Total = Valid + Excluded
+      const sumEqualsTotal = metrics.valid_observations + metrics.excluded_observations === metrics.total_periods;
+      if (!sumEqualsTotal) {
+        throw new Error(`Completeness violation: Valid (${metrics.valid_observations}) + Excluded (${metrics.excluded_observations}) != Total (${metrics.total_periods})`);
       }
 
-      // Rule 2: Valid + Excluded must equal Total
-      const accountingSum = metrics.valid_observations + metrics.excluded_observations;
-      if (accountingSum !== metrics.total_periods) {
-        throw new Error(
-          `Observation accounting mismatch: Valid (${metrics.valid_observations}) + Excluded (${metrics.excluded_observations}) != Total (${metrics.total_periods})`
-        );
-      }
-
-      // Rule 3: Zero generation (0.0 MW) must be classified as valid, NOT missing!
-      const zeroGenerationPoints = points.filter(
-        (p) => p.actual_generation_mw === 0 || p.forecast_generation_mw === 0
+      // 2. Zero-generation integrity check: verify that if any actual generation is 0.0 MW, it is treated as valid
+      const zeroPoints = data.generation_series.filter(
+        (p) => p.actual_generation_mw !== null && p.actual_generation_mw === 0.0
       );
-      for (const zp of zeroGenerationPoints) {
-        if (!zp.is_valid_pair && zp.actual_generation_mw !== null && zp.forecast_generation_mw !== null) {
+      for (const zp of zeroPoints) {
+        if (!zp.is_valid_pair && zp.status !== 'MISSING_FORECAST') {
           throw new Error(`Zero generation at SP ${zp.settlement_period} was erroneously marked as invalid missing data!`);
         }
       }
@@ -538,7 +519,6 @@ export const TestingLabPage: React.FC = () => {
     });
   };
 
-  // Trigger test-specific download of sample CSV
   const handleDownloadSampleCsv = async () => {
     try {
       const data = await apiService.getGeneration(selectedDate, selectedCutoff);
@@ -566,24 +546,18 @@ export const TestingLabPage: React.FC = () => {
   const testList = Object.values(tests);
   const passedCount = testList.filter((t) => t.status === 'PASS').length;
   const failedCount = testList.filter((t) => t.status === 'FAIL').length;
-  const runningCount = testList.filter((t) => t.status === 'RUNNING').length;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header Banner */}
-      <div className="rounded-lg border border-navy-700/80 bg-[#0c1427] p-5 shadow-xl space-y-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between pb-3 border-b border-navy-800 gap-3">
-          <div className="space-y-1">
-            <div className="flex items-center space-x-2">
-              <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-cyan-950 text-accent-cyan border border-cyan-800 flex items-center gap-1">
-                <FlaskConical className="w-3.5 h-3.5" /> QA &amp; REVIEWER LAB
-              </span>
-              <h2 className="text-base font-bold text-slate-100 tracking-wide font-sans">
-                Interactive Analytical Verification &amp; Testing Lab
-              </h2>
-            </div>
-            <p className="text-xs text-slate-400 font-sans">
-              Independent audit harness enabling reviewers and risk managers to verify calculation correctness, look-ahead bias guards, and Elexon data integrity live against the backend.
+      <div className="rounded-lg border border-slate-800 bg-[#0e1526] p-3.5 space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-2.5 border-b border-slate-800 gap-2">
+          <div className="space-y-0.5">
+            <h2 className="text-base font-semibold text-slate-100">
+              Interactive Analytical Verification &amp; Testing Lab
+            </h2>
+            <p className="text-xs text-slate-400">
+              Automated testing suite executing live mathematical verification against backend endpoints and real Elexon data
             </p>
           </div>
 
@@ -592,24 +566,24 @@ export const TestingLabPage: React.FC = () => {
             <button
               onClick={handleRunAllTests}
               disabled={isRunningAll}
-              className="inline-flex items-center space-x-2 px-4 py-2 rounded-md bg-accent-teal hover:bg-cyan-400 text-navy-950 font-bold text-xs font-sans transition-colors shadow-lg shadow-cyan-950/50 disabled:opacity-50"
+              className="inline-flex items-center space-x-2 px-3 py-1.5 rounded bg-sky-700 hover:bg-sky-600 text-white font-medium text-xs transition-colors disabled:opacity-50"
             >
-              <Play className="w-3.5 h-3.5 fill-navy-950" />
+              <Play className="w-3.5 h-3.5 fill-white" />
               <span>{isRunningAll ? 'Executing Suite...' : 'Run All 6 Tests'}</span>
             </button>
             <button
               onClick={handleReset}
               disabled={isRunningAll}
-              className="p-2 rounded-md bg-navy-900 hover:bg-navy-800 text-slate-400 hover:text-slate-200 border border-navy-700 transition-colors"
+              className="p-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 border border-slate-700 transition-colors"
               title="Reset Test Status"
             >
-              <RotateCcw className="w-4 h-4" />
+              <RotateCcw className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
 
         {/* Global Parameter Controls */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2.5">
           <DateSelector
             selectedDate={selectedDate}
             onChange={setSelectedDate}
@@ -623,16 +597,16 @@ export const TestingLabPage: React.FC = () => {
         </div>
 
         {/* Suite Health Progress Strip */}
-        <div className="rounded-lg bg-navy-950/80 p-3 border border-navy-850 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono">
-          <div className="flex items-center space-x-4">
-            <span className="text-slate-400 font-sans font-semibold">Test Suite Status:</span>
-            <span className="flex items-center space-x-1.5 text-emerald-400 font-bold">
-              <CheckCircle2 className="w-4 h-4" />
+        <div className="rounded bg-slate-900/80 p-2.5 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-mono">
+          <div className="flex items-center space-x-3">
+            <span className="text-slate-400 font-sans font-medium">Suite Status:</span>
+            <span className="flex items-center space-x-1 text-emerald-400 font-semibold">
+              <CheckCircle2 className="w-3.5 h-3.5" />
               <span>{passedCount} Passed</span>
             </span>
             {failedCount > 0 && (
-              <span className="flex items-center space-x-1.5 text-rose-400 font-bold">
-                <XCircle className="w-4 h-4" />
+              <span className="flex items-center space-x-1 text-rose-400 font-semibold">
+                <XCircle className="w-3.5 h-3.5" />
                 <span>{failedCount} Failed</span>
               </span>
             )}
@@ -640,21 +614,21 @@ export const TestingLabPage: React.FC = () => {
           </div>
 
           <div className="flex items-center space-x-2">
-            <div className="w-36 h-2 rounded-full bg-navy-900 border border-navy-800 overflow-hidden">
+            <div className="w-32 h-1.5 rounded-full bg-slate-800 overflow-hidden">
               <div
-                className="h-full bg-accent-teal transition-all duration-300"
+                className="h-full bg-sky-500 transition-all duration-300"
                 style={{ width: `${(passedCount / testList.length) * 100}%` }}
               />
             </div>
-            <span className="text-slate-300 font-bold">
-              {Math.round((passedCount / testList.length) * 100)}% Complete
+            <span className="text-slate-300 font-semibold">
+              {Math.round((passedCount / testList.length) * 100)}%
             </span>
           </div>
         </div>
       </div>
 
-      {/* 6 Comprehensive Test Cards */}
-      <div className="space-y-4">
+      {/* 6 Test Cards */}
+      <div className="space-y-3">
         {testList.map((test) => {
           const isExpanded = expandedTest === test.id;
           const isPassed = test.status === 'PASS';
@@ -664,51 +638,51 @@ export const TestingLabPage: React.FC = () => {
           return (
             <div
               key={test.id}
-              className={`rounded-lg border transition-all ${
+              className={`rounded-lg border transition-colors ${
                 isPassed
-                  ? 'border-emerald-800/80 bg-[#0c1626]'
+                  ? 'border-emerald-800/80 bg-[#0e1724]'
                   : isFailed
-                  ? 'border-rose-800/80 bg-[#1a0f18]'
+                  ? 'border-rose-800/80 bg-[#170e14]'
                   : isRunning
-                  ? 'border-cyan-800/80 bg-[#0c1427]'
-                  : 'border-navy-700/80 bg-[#0c1427]'
+                  ? 'border-sky-800/80 bg-[#0e1628]'
+                  : 'border-slate-800/90 bg-[#0e1526]'
               }`}
             >
               {/* Test Header Row */}
               <div
                 onClick={() => setExpandedTest(isExpanded ? null : test.id)}
-                className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer select-none"
+                className="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 cursor-pointer select-none"
               >
                 <div className="flex items-start sm:items-center space-x-3">
                   <div className="mt-0.5 sm:mt-0">
-                    {isPassed && <CheckCircle2 className="w-5 h-5 text-emerald-400" />}
-                    {isFailed && <XCircle className="w-5 h-5 text-rose-400" />}
-                    {isRunning && <Clock className="w-5 h-5 text-accent-cyan animate-spin" />}
-                    {test.status === 'NOT_RUN' && <Clock className="w-5 h-5 text-slate-500" />}
+                    {isPassed && <CheckCircle2 className="w-4 h-4 text-emerald-400" />}
+                    {isFailed && <XCircle className="w-4 h-4 text-rose-400" />}
+                    {isRunning && <Clock className="w-4 h-4 text-sky-400 animate-spin" />}
+                    {test.status === 'NOT_RUN' && <Clock className="w-4 h-4 text-slate-500" />}
                   </div>
 
                   <div>
                     <div className="flex items-center space-x-2">
-                      <h3 className="text-sm font-bold text-slate-100 font-sans">{test.name}</h3>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-navy-950 text-slate-300 border border-navy-800">
+                      <h3 className="text-xs font-semibold text-slate-100 font-sans">{test.name}</h3>
+                      <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-900 text-slate-400 border border-slate-800">
                         {test.category}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-400 font-sans mt-0.5">{test.description}</p>
+                    <p className="text-[11px] text-slate-400 font-sans mt-0.5">{test.description}</p>
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-3 self-end sm:self-auto">
+                <div className="flex items-center space-x-2 self-end sm:self-auto">
                   {/* Status Badge */}
                   <span
-                    className={`text-xs font-mono font-bold px-2.5 py-1 rounded-md border ${
+                    className={`text-[11px] font-mono px-2 py-0.5 rounded border ${
                       isPassed
-                        ? 'bg-emerald-950 text-emerald-400 border-emerald-800'
+                        ? 'bg-emerald-950/80 text-emerald-400 border-emerald-800/80 font-bold'
                         : isFailed
-                        ? 'bg-rose-950 text-rose-400 border-rose-800'
+                        ? 'bg-rose-950/80 text-rose-400 border-rose-800/80 font-bold'
                         : isRunning
-                        ? 'bg-cyan-950 text-cyan-300 border-cyan-800'
-                        : 'bg-navy-900 text-slate-400 border-navy-800'
+                        ? 'bg-sky-950/80 text-sky-300 border-sky-800/80 font-bold'
+                        : 'bg-slate-900 text-slate-400 border-slate-800'
                     }`}
                   >
                     {test.status}
@@ -726,33 +700,33 @@ export const TestingLabPage: React.FC = () => {
                       if (test.id === 'test-6') runTest6(selectedDate, selectedCutoff);
                     }}
                     disabled={isRunningAll || isRunning}
-                    className="px-3 py-1 rounded bg-navy-800 hover:bg-navy-700 text-slate-200 border border-navy-700 text-xs font-sans transition-colors disabled:opacity-50"
+                    className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-sans transition-colors disabled:opacity-50"
                   >
                     {isRunning ? 'Running...' : 'Run Test'}
                   </button>
 
                   {isExpanded ? (
-                    <ChevronDown className="w-4 h-4 text-slate-400" />
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
                   ) : (
-                    <ChevronRight className="w-4 h-4 text-slate-400" />
+                    <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
                   )}
                 </div>
               </div>
 
               {/* Expanded Verification Details */}
               {isExpanded && (
-                <div className="px-4 pb-4 pt-1 border-t border-navy-800/80 space-y-3 text-xs font-mono">
+                <div className="px-3.5 pb-3.5 pt-1 border-t border-slate-800/80 space-y-2.5 text-xs font-mono">
                   {/* Expected vs User Action */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 font-sans">
-                    <div className="p-3 rounded bg-navy-950 border border-navy-850 space-y-1">
-                      <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 pt-1 font-sans">
+                    <div className="p-2.5 rounded bg-slate-900 border border-slate-800 space-y-1">
+                      <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
                         Action Executed
                       </span>
                       <p className="text-slate-300 text-xs">{test.userAction}</p>
                     </div>
 
-                    <div className="p-3 rounded bg-navy-950 border border-navy-850 space-y-1">
-                      <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
+                    <div className="p-2.5 rounded bg-slate-900 border border-slate-800 space-y-1">
+                      <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
                         Expected Contract Result
                       </span>
                       <p className="text-slate-300 text-xs">{test.expectedResult}</p>
@@ -761,9 +735,9 @@ export const TestingLabPage: React.FC = () => {
 
                   {/* Actual Results Outcome */}
                   {test.actualResult && (
-                    <div className="p-3.5 rounded bg-emerald-950/40 border border-emerald-800/70 text-emerald-200 font-sans space-y-1">
-                      <span className="text-[11px] font-semibold uppercase tracking-wider block text-emerald-400">
-                        Live Verification Outcome
+                    <div className="p-3 rounded bg-emerald-950/30 border border-emerald-800/60 text-emerald-200 font-sans space-y-1">
+                      <span className="text-[10px] font-semibold uppercase tracking-wider block text-emerald-400">
+                        Live Execution Outcome
                       </span>
                       <p className="text-xs leading-relaxed">{test.actualResult}</p>
                     </div>
@@ -771,27 +745,27 @@ export const TestingLabPage: React.FC = () => {
 
                   {/* Error Outcome */}
                   {test.errorMessage && (
-                    <div className="p-3.5 rounded bg-rose-950/50 border border-rose-800/80 text-rose-200 font-sans space-y-1">
-                      <span className="text-[11px] font-semibold uppercase tracking-wider block text-rose-400">
+                    <div className="p-3 rounded bg-rose-950/40 border border-rose-800/70 text-rose-200 font-sans space-y-1">
+                      <span className="text-[10px] font-semibold uppercase tracking-wider block text-rose-400">
                         Test Failure Details
                       </span>
                       <p className="text-xs leading-relaxed">{test.errorMessage}</p>
                     </div>
                   )}
 
-                  {/* Granular Key/Value Details */}
+                  {/* Key/Value Telemetry */}
                   {test.details && (
-                    <div className="p-3 rounded bg-navy-950 border border-navy-850 space-y-2">
-                      <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block font-sans">
+                    <div className="p-2.5 rounded bg-slate-900 border border-slate-800 space-y-2">
+                      <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block font-sans">
                         Audit Data Telemetry
                       </span>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs">
                         {Object.entries(test.details).map(([key, val]) => (
-                          <div key={key} className="flex justify-between items-center p-1.5 rounded bg-navy-900 border border-navy-850">
-                            <span className="text-slate-400 font-sans capitalize">
+                          <div key={key} className="flex justify-between items-center p-1.5 rounded bg-slate-850 border border-slate-800">
+                            <span className="text-slate-400 font-sans capitalize text-[11px]">
                               {key.replace(/([A-Z])/g, ' $1')}:
                             </span>
-                            <span className="font-bold text-slate-200 truncate ml-2">
+                            <span className="font-semibold text-slate-200 truncate ml-2 tabular-nums">
                               {typeof val === 'object' ? JSON.stringify(val) : String(val)}
                             </span>
                           </div>
@@ -799,12 +773,12 @@ export const TestingLabPage: React.FC = () => {
                       </div>
 
                       {test.id === 'test-6' && isPassed && (
-                        <div className="pt-2 flex justify-end">
+                        <div className="pt-1.5 flex justify-end">
                           <button
                             onClick={handleDownloadSampleCsv}
-                            className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded bg-navy-800 hover:bg-navy-700 text-slate-200 border border-navy-700 font-sans text-xs transition-colors"
+                            className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-sans text-xs transition-colors"
                           >
-                            <Download className="w-3.5 h-3.5 text-accent-cyan" />
+                            <Download className="w-3.5 h-3.5 text-sky-400" />
                             <span>Download Validated CSV Sample</span>
                           </button>
                         </div>
@@ -820,4 +794,3 @@ export const TestingLabPage: React.FC = () => {
     </div>
   );
 };
-

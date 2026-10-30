@@ -9,21 +9,7 @@ import { ForecastErrorChart } from '../components/charts/ForecastErrorChart';
 import { ProcurementExposureWidget } from '../components/exposure/ProcurementExposureWidget';
 import { ErrorAlert } from '../components/common/ErrorAlert';
 import { CardSkeleton, ChartSkeleton } from '../components/common/Skeleton';
-import {
-  Database,
-  Sparkles,
-  Zap,
-  TrendingUp,
-  TrendingDown,
-  Scale,
-  Calendar,
-  Layers,
-  Info,
-  FlaskConical,
-  BookOpen,
-  ShieldAlert,
-  ArrowRight,
-} from 'lucide-react';
+import { Database, Info } from 'lucide-react';
 
 interface OverviewPageProps {
   initialDate?: string;
@@ -61,83 +47,28 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
   }, [selectedDate, selectedCutoff]);
 
   return (
-    <div className="space-y-6">
-      {/* Reviewer Landing Banner & Action Bar */}
-      <div className="rounded-lg border border-cyan-800/60 bg-gradient-to-r from-navy-950 via-[#0c1427] to-cyan-950/40 p-4 shadow-xl flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-        <div className="space-y-1">
-          <div className="flex items-center space-x-2">
-            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-accent-teal/20 text-accent-cyan border border-accent-teal/40">
-              AUDIT &amp; REVIEW READY
-            </span>
-            <span className="text-xs text-slate-400 font-mono">
-              Elexon BMRS Datasets: FUELHH &amp; WINDFOR &bull; January 2026 Scope
-            </span>
-          </div>
-          <p className="text-xs text-slate-300 font-sans leading-relaxed max-w-2xl">
-            Evaluate national wind generation forecasts against outturn, enforce point-in-time selection against statutory trading cutoffs to eliminate look-ahead bias, and verify day-ahead procurement exposure.
-          </p>
-        </div>
-
-        {onNavigate && (
-          <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
-            <button
-              onClick={() => onNavigate('testing-lab')}
-              className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-md bg-accent-teal hover:bg-cyan-400 text-navy-950 font-bold text-xs font-sans transition-colors shadow-md shadow-cyan-950/50"
-            >
-              <FlaskConical className="w-3.5 h-3.5" />
-              <span>Start Testing (QA Lab)</span>
-            </button>
-            <button
-              onClick={() => onNavigate('explorer')}
-              className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-navy-850 hover:bg-navy-800 text-slate-200 border border-navy-700 text-xs font-sans transition-colors"
-            >
-              <Database className="w-3.5 h-3.5 text-accent-cyan" />
-              <span>Start Exploring</span>
-            </button>
-            <button
-              onClick={() => onNavigate('exposure')}
-              className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-navy-850 hover:bg-navy-800 text-slate-200 border border-navy-700 text-xs font-sans transition-colors"
-            >
-              <ShieldAlert className="w-3.5 h-3.5 text-accent-amber" />
-              <span>Exposure Deep-Dive</span>
-            </button>
-            <button
-              onClick={() => onNavigate('methodology')}
-              className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-navy-850 hover:bg-navy-800 text-slate-200 border border-navy-700 text-xs font-sans transition-colors"
-            >
-              <BookOpen className="w-3.5 h-3.5 text-slate-400" />
-              <span>Methodology</span>
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Executive Control Header Ribbon */}
-      <div className="rounded-lg border border-navy-700/80 bg-[#0c1427] p-4 shadow-xl space-y-3">
-        <div className="flex flex-col md:flex-row md:items-center justify-between pb-3 border-b border-navy-800 gap-3">
+    <div className="space-y-4">
+      {/* Operational Control Toolbar */}
+      <div className="rounded-lg border border-slate-800 bg-[#0e1526] p-3.5 space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-2.5 border-b border-slate-800 gap-2">
           <div>
-            <div className="flex items-center space-x-2">
-              <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-cyan-950 text-accent-cyan border border-cyan-800">
-                UK NATIONAL WIND
-              </span>
-              <h2 className="text-base font-bold text-slate-100 tracking-wide font-sans">
-                Wind Power Forecasting &amp; Day-Ahead Procurement Analytics
-              </h2>
-            </div>
-            <p className="text-xs text-slate-400 mt-1 font-sans">
-              Reconstructing point-in-time trading intelligence for Great Britain electricity settlement periods
+            <h2 className="text-base font-semibold text-slate-100">
+              National Wind Power Forecasting &amp; Day-Ahead Balancing Analytics
+            </h2>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Evaluating national metered wind generation against point-in-time Day-Ahead forecasts for GB settlement periods
             </p>
           </div>
 
           <div className="flex items-center space-x-2 text-xs font-mono">
-            <span className="px-2.5 py-1 rounded bg-navy-950 border border-navy-800 text-slate-300">
-              Delivery Date: <strong className="text-accent-teal">{selectedDate}</strong>
+            <span className="px-2.5 py-1 rounded bg-slate-900 border border-slate-800 text-slate-300">
+              Date: <strong className="text-slate-100">{selectedDate}</strong>
             </span>
           </div>
         </div>
 
-        {/* Filters */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+        {/* Date and Cutoff Selectors */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2.5">
           <DateSelector
             selectedDate={selectedDate}
             onChange={setSelectedDate}
@@ -153,19 +84,19 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
 
       {/* Loading Skeletons */}
       {loading && (
-        <div className="space-y-6 animate-in fade-in duration-200">
+        <div className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
             {Array.from({ length: 5 }).map((_, i) => (
               <CardSkeleton key={i} />
             ))}
           </div>
-          <ChartSkeleton height={360} />
-          <ChartSkeleton height={240} />
+          <ChartSkeleton height={340} />
           <ChartSkeleton height={220} />
+          <ChartSkeleton height={240} />
         </div>
       )}
 
-      {/* Error Notice */}
+      {/* Error Alert */}
       {error && !loading && (
         <ErrorAlert
           title="Data Ingestion Error"
@@ -174,46 +105,31 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
         />
       )}
 
-      {/* Data Loaded Successfully */}
+      {/* Main Content Area */}
       {!loading && !error && data && (
         <>
-          {/* Market Process Notice Banner */}
-          <div className="rounded-lg bg-navy-900/60 border border-navy-800 p-3.5 flex items-start space-x-3 text-xs text-slate-300">
-            <Sparkles className="w-4 h-4 text-accent-cyan flex-shrink-0 mt-0.5" />
-            <div className="space-y-0.5 font-sans">
-              <span className="font-semibold text-slate-100">
-                Evaluating {data.selected_date} Delivery with {data.cutoff_info.name}:
-              </span>{' '}
-              <span className="text-slate-300">
-                {data.cutoff_info.description} {data.cutoff_info.market_relevance}
-              </span>
-            </div>
-          </div>
-
-          {/* 5 Primary Executive KPI Cards */}
+          {/* 5 Primary Analytical Metric Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
             {/* 1. MAE */}
             <MetricCard
               title="Mean Absolute Error (MAE)"
               value={data.date_metrics.mae_mw}
               unit="MW"
-              subtitle="Average magnitude of forecast error across 48 settlement periods"
+              subtitle="Average magnitude across 48 periods"
               tooltip="MAE = (1/N) * Sum(|Forecast - Actual|). Low values indicate tighter tracking."
-              highlight="teal"
+              highlight="neutral"
               precision={1}
-              statusBadge="TIGHTNESS"
             />
 
             {/* 2. RMSE */}
             <MetricCard
-              title="Root Mean Squared Error (RMSE)"
+              title="Root Mean Squared Error"
               value={data.date_metrics.rmse_mw}
               unit="MW"
-              subtitle="Heavily penalizes extreme forecast misses"
-              tooltip="RMSE = Sqrt((1/N) * Sum((Forecast - Actual)^2)). Sensitive to large deviations."
+              subtitle="Penalizes large forecast misses"
+              tooltip="RMSE = Sqrt((1/N) * Sum((Forecast - Actual)^2)). Sensitive to extreme errors."
               highlight="neutral"
               precision={1}
-              statusBadge="OUTLIER SENSITIVITY"
             />
 
             {/* 3. WAPE */}
@@ -221,11 +137,10 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
               title="WAPE Volume Error"
               value={data.date_metrics.wape_percent}
               unit="%"
-              subtitle="Weighted percentage volume error over total daily wind volume"
-              tooltip="WAPE = (Sum(|Error|) / Sum(Actual)) * 100. Robust metric avoiding individual period division by zero."
-              highlight="green"
+              subtitle="Weighted percentage volume error"
+              tooltip="WAPE = (Sum(|Error|) / Sum(Actual)) * 100. Stable metric protected against division by zero."
+              highlight="teal"
               precision={1}
-              statusBadge="VOLUME ERROR"
             />
 
             {/* 4. Forecast Bias */}
@@ -250,7 +165,6 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
                   : 'neutral'
               }
               precision={1}
-              statusBadge={data.date_metrics.bias_direction}
             />
 
             {/* 5. Valid Observations */}
@@ -260,46 +174,45 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
               unit="/ 48"
               subtitle={
                 data.date_metrics.excluded_observations === 0
-                  ? '100% complete half-hourly paired observations'
-                  : `${data.date_metrics.excluded_observations} periods excluded due to missing actuals/forecast`
+                  ? '100% paired observations'
+                  : `${data.date_metrics.excluded_observations} periods excluded`
               }
-              tooltip="Settlement periods with both metered actual generation and eligible forecasts."
-              highlight={data.date_metrics.excluded_observations > 0 ? 'amber' : 'neutral'}
+              tooltip="Settlement periods with both metered actual generation and valid forecasts."
+              highlight="neutral"
               precision={0}
-              statusBadge="OBSERVATION INTEGRITY"
             />
           </div>
 
           {/* Secondary Telemetry Strip */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 text-xs font-mono">
-            <div className="p-3 rounded-lg bg-[#0c1427] border border-navy-800 text-slate-300 flex justify-between items-center">
-              <span className="text-slate-400">Fleet Mean Actual:</span>
-              <strong className="text-emerald-400">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs font-mono">
+            <div className="p-2.5 rounded bg-[#0e1526] border border-slate-800 text-slate-300 flex justify-between items-center">
+              <span className="text-slate-400">Mean Actual:</span>
+              <strong className="text-emerald-400 tabular-nums">
                 {data.date_metrics.mean_actual_mw?.toLocaleString() ?? 'N/A'} MW
               </strong>
             </div>
-            <div className="p-3 rounded-lg bg-[#0c1427] border border-navy-800 text-slate-300 flex justify-between items-center">
-              <span className="text-slate-400">Fleet Mean Forecast:</span>
-              <strong className="text-cyan-400">
+            <div className="p-2.5 rounded bg-[#0e1526] border border-slate-800 text-slate-300 flex justify-between items-center">
+              <span className="text-slate-400">Mean Forecast:</span>
+              <strong className="text-sky-400 tabular-nums">
                 {data.date_metrics.mean_forecast_mw?.toLocaleString() ?? 'N/A'} MW
               </strong>
             </div>
-            <div className="p-3 rounded-lg bg-[#0c1427] border border-navy-800 text-slate-300 flex justify-between items-center">
-              <span className="text-slate-400">Net Variance Energy:</span>
+            <div className="p-2.5 rounded bg-[#0e1526] border border-slate-800 text-slate-300 flex justify-between items-center">
+              <span className="text-slate-400">Net Energy Variance:</span>
               <strong
-                className={
+                className={`tabular-nums ${
                   data.exposure_summary.net_energy_variance_mwh > 0
                     ? 'text-amber-400'
                     : data.exposure_summary.net_energy_variance_mwh < 0
-                    ? 'text-cyan-400'
+                    ? 'text-sky-400'
                     : 'text-slate-200'
-                }
+                }`}
               >
                 {data.exposure_summary.net_energy_variance_mwh > 0 ? '+' : ''}
                 {data.exposure_summary.net_energy_variance_mwh.toLocaleString()} MWh
               </strong>
             </div>
-            <div className="p-3 rounded-lg bg-[#0c1427] border border-navy-800 text-slate-300 flex justify-between items-center">
+            <div className="p-2.5 rounded bg-[#0e1526] border border-slate-800 text-slate-300 flex justify-between items-center">
               <span className="text-slate-400">Dominant Exposure:</span>
               <strong className="text-slate-100 font-sans">
                 {data.exposure_summary.dominant_risk_category === 'NET_SHORT_EXPOSURE'
@@ -315,36 +228,36 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
           <ForecastVsActualChart
             data={data.generation_series}
             title={`January 2026 Wind Generation Profile: Delivery Date ${data.selected_date}`}
-            subtitle={`Official FUELHH actuals paired with latest WINDFOR submissions prior to ${data.cutoff_info.name}`}
+            subtitle={`Official FUELHH actuals paired with WINDFOR submissions selected prior to ${data.cutoff_info.name}`}
           />
 
           {/* Chart 2: Forecast Error Analysis */}
           <ForecastErrorChart
             data={data.generation_series}
-            title="Settlement Interval Forecast Error (Forecast minus Actual)"
-            subtitle="Error in MW for each 30-minute settlement period with directional market risk indicator"
+            title="Half-Hourly Forecast Deviation (Forecast minus Actual)"
+            subtitle="Error in MW for each 30-minute settlement period with directional risk indicators"
           />
 
-          {/* Chart 3 & Section 5: Day-Ahead Procurement Exposure Analysis */}
+          {/* Chart 3 & Section: Day-Ahead Procurement Exposure Analysis */}
           <ProcurementExposureWidget
             exposure={data.exposure_summary}
             generationPoints={data.generation_series}
           />
 
           {/* Data Freshness & Source Status Footer Card */}
-          <div className="rounded-lg border border-navy-800 bg-[#070d19] p-4 text-xs font-mono text-slate-400 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <div className="rounded border border-slate-800 bg-[#0a0f1d] p-3 text-xs font-mono text-slate-400 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
             <div className="flex items-center space-x-2">
-              <Database className="w-4 h-4 text-accent-teal" />
+              <Database className="w-3.5 h-3.5 text-slate-400" />
               <span>
-                Source: <strong className="text-slate-200">{data.data_source}</strong> ({data.source_status.data_source_description})
+                Data Sources: <strong className="text-slate-300">FUELHH &amp; WINDFOR</strong> ({data.source_status.data_source_description})
               </span>
             </div>
             <div className="flex items-center space-x-4">
               <span>
-                Resolution: <strong className="text-slate-200">30 minutes</strong>
+                Resolution: <strong className="text-slate-300">30 min (48 SPs)</strong>
               </span>
               <span>
-                Window: <strong className="text-slate-200">{data.evaluation_window}</strong>
+                Window: <strong className="text-slate-300">{data.evaluation_window}</strong>
               </span>
             </div>
           </div>

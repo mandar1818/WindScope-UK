@@ -7,7 +7,6 @@ import { DataTable } from '../components/tables/DataTable';
 import { ErrorAlert } from '../components/common/ErrorAlert';
 import { TableSkeleton } from '../components/common/Skeleton';
 import { EmptyState } from '../components/common/EmptyState';
-import { Database, Filter, Layers } from 'lucide-react';
 
 export const DataExplorerPage: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<string>('2026-01-15');
@@ -34,33 +33,28 @@ export const DataExplorerPage: React.FC = () => {
   }, [selectedDate, selectedCutoff]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Control Header Ribbon */}
-      <div className="rounded-lg border border-navy-700/80 bg-[#0c1427] p-4 shadow-xl space-y-3">
-        <div className="flex flex-col md:flex-row md:items-center justify-between pb-3 border-b border-navy-800 gap-3">
+      <div className="rounded-lg border border-slate-800 bg-[#0e1526] p-3.5 space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-2.5 border-b border-slate-800 gap-2">
           <div>
-            <div className="flex items-center space-x-2">
-              <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-cyan-950 text-accent-cyan border border-cyan-800">
-                RAW DATA EXPLORER
-              </span>
-              <h2 className="text-base font-bold text-slate-100 tracking-wide font-sans">
-                Half-Hourly Delivery Period Observations &amp; Export
-              </h2>
-            </div>
-            <p className="text-xs text-slate-400 mt-1 font-sans">
+            <h2 className="text-base font-semibold text-slate-100">
+              Half-Hourly Settlement Observations &amp; Raw Data Export
+            </h2>
+            <p className="text-xs text-slate-400 mt-0.5">
               Inspect granular metered FUELHH actual generation paired with point-in-time selected WINDFOR forecasts
             </p>
           </div>
 
           <div className="flex items-center space-x-2 text-xs font-mono">
-            <span className="px-2.5 py-1 rounded bg-navy-950 border border-navy-800 text-slate-300">
-              Query Date: <strong className="text-accent-teal">{selectedDate}</strong>
+            <span className="px-2.5 py-1 rounded bg-slate-900 border border-slate-800 text-slate-300">
+              Delivery Date: <strong className="text-slate-100">{selectedDate}</strong>
             </span>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2.5">
           <DateSelector
             selectedDate={selectedDate}
             onChange={setSelectedDate}

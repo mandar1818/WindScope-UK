@@ -41,9 +41,9 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
   };
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 bg-navy-900/80 p-2.5 rounded-lg border border-navy-700">
-      <div className="flex items-center space-x-1.5 text-xs font-semibold uppercase tracking-wider text-slate-300">
-        <Calendar className="w-4 h-4 text-accent-teal" />
+    <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 bg-[#0e1526] p-2.5 rounded-lg border border-slate-800">
+      <div className="flex items-center space-x-1.5 text-xs font-medium text-slate-300">
+        <Calendar className="w-3.5 h-3.5 text-sky-400" />
         <span>Delivery Date:</span>
       </div>
 
@@ -51,10 +51,10 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
         <button
           onClick={handlePrevDay}
           disabled={disabled || selectedDate <= '2026-01-01'}
-          className="p-1 rounded bg-navy-800 text-slate-300 hover:bg-navy-700 disabled:opacity-30 disabled:cursor-not-allowed border border-navy-700"
+          className="p-1 rounded bg-slate-800 text-slate-300 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed border border-slate-700/60"
           title="Previous Day"
         >
-          <ChevronLeft className="w-4 h-4" />
+          <ChevronLeft className="w-3.5 h-3.5" />
         </button>
 
         <input
@@ -69,21 +69,21 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
               onChange(val);
             }
           }}
-          className="bg-navy-950 border border-navy-600 rounded px-2.5 py-1 text-xs font-mono font-bold text-accent-cyan focus:outline-none focus:ring-1 focus:ring-accent-teal cursor-pointer"
+          className="bg-slate-900 border border-slate-700 rounded px-2.5 py-1 text-xs font-mono font-medium text-slate-100 focus:outline-none focus:border-sky-500 cursor-pointer"
         />
 
         <button
           onClick={handleNextDay}
           disabled={disabled || selectedDate >= '2026-01-31'}
-          className="p-1 rounded bg-navy-800 text-slate-300 hover:bg-navy-700 disabled:opacity-30 disabled:cursor-not-allowed border border-navy-700"
+          className="p-1 rounded bg-slate-800 text-slate-300 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed border border-slate-700/60"
           title="Next Day"
         >
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="w-3.5 h-3.5" />
         </button>
       </div>
 
       <div className="flex items-center gap-1 overflow-x-auto py-0.5">
-        <span className="text-[11px] text-slate-400 mr-1 hidden md:inline">Jump:</span>
+        <span className="text-[11px] text-slate-400 mr-1 hidden md:inline font-mono">Sample:</span>
         {QUICK_DATES.map((d) => {
           const dayNum = d.split('-')[2];
           const isSelected = d === selectedDate;
@@ -94,8 +94,8 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
               onClick={() => onChange(d)}
               className={`px-2 py-0.5 text-[11px] font-mono rounded transition-colors ${
                 isSelected
-                  ? 'bg-accent-teal/30 text-accent-cyan border border-accent-teal/50 font-bold'
-                  : 'bg-navy-800/80 text-slate-400 hover:bg-navy-700 hover:text-slate-200 border border-navy-700/50'
+                  ? 'bg-sky-900/60 text-sky-200 border border-sky-700 font-semibold'
+                  : 'bg-slate-800/80 text-slate-400 hover:bg-slate-700/80 hover:text-slate-200 border border-slate-700/50'
               }`}
             >
               Jan {dayNum}
@@ -106,4 +106,3 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
     </div>
   );
 };
-

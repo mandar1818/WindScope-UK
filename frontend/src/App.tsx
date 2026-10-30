@@ -11,7 +11,6 @@ import { TestingLabPage } from './pages/TestingLabPage';
 import { MethodologyPage } from './pages/MethodologyPage';
 import { apiService } from './services/api';
 import { SourceStatus } from './types/api';
-import { Database, ShieldCheck, Zap } from 'lucide-react';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<string>('overview');
@@ -44,7 +43,7 @@ export function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#070d19] text-slate-100 flex flex-col font-sans selection:bg-accent-teal selection:text-navy-950">
+    <div className="min-h-screen bg-[#080d1a] text-slate-100 flex flex-col font-sans selection:bg-sky-500/30 selection:text-white">
       {/* Financial Terminal Shell */}
       <div className="flex flex-1">
         {/* Left Navigation Sidebar */}
@@ -61,8 +60,8 @@ export function App() {
 
         {/* Right Main Application Area */}
         <div
-          className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ${
-            isSidebarCollapsed ? 'lg:pl-20' : 'lg:pl-64'
+          className={`flex-1 flex flex-col min-w-0 transition-all duration-200 ${
+            isSidebarCollapsed ? 'lg:pl-16' : 'lg:pl-60'
           }`}
         >
           {/* Top Navigation Bar */}
@@ -75,7 +74,7 @@ export function App() {
           />
 
           {/* Main Dashboard Pages Container */}
-          <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
             {activeTab === 'overview' && <OverviewPage onNavigate={setActiveTab} />}
             {activeTab === 'forecast' && <ForecastAnalysisPage />}
             {activeTab === 'accuracy' && <AccuracyAnalysisPage />}
@@ -85,29 +84,26 @@ export function App() {
             {activeTab === 'methodology' && <MethodologyPage />}
           </main>
 
-          {/* Enterprise Terminal Footer */}
-          <footer className="border-t border-navy-800/80 bg-[#070d19] py-5 text-xs text-slate-400 font-mono mt-auto">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
-              <div className="flex flex-wrap items-center space-x-2">
-                <span className="font-bold text-slate-200">WindScope UK</span>
+          {/* Clean Institutional Footer */}
+          <footer className="border-t border-slate-800/80 bg-[#0a0f1d] py-4 text-xs text-slate-400 mt-auto">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div className="flex flex-wrap items-center space-x-2 text-[11px]">
+                <span className="font-semibold text-slate-300">WindScope UK</span>
                 <span className="text-slate-600">&bull;</span>
-                <span className="text-accent-cyan">Enterprise Trading Analytics</span>
+                <span>Day-Ahead Procurement Analytics</span>
                 <span className="text-slate-600">&bull;</span>
-                <span>GB National Wind Fleet</span>
+                <span className="font-mono text-slate-400">January 2026 Evaluation</span>
               </div>
 
-              <div className="text-center md:text-right text-[11px] text-slate-400 font-sans">
-                Elexon BMRS Datasets: FUELHH (Metered Outturn) &amp; WINDFOR (Day-Ahead Forecasts)
-                <div className="text-[10px] text-slate-400 mt-0.5 font-mono">
-                  Evaluation Scope: January 2026 &bull; Timestamps: Europe/London (GMT) / UTC
-                </div>
+              <div className="text-[11px] text-slate-400 font-mono text-center sm:text-right">
+                Elexon BMRS Datasets: FUELHH &amp; WINDFOR &bull; Europe/London (GMT)
               </div>
             </div>
           </footer>
         </div>
       </div>
 
-      {/* System Status Telemetry Modal */}
+      {/* System Telemetry & Pipeline Details Modal */}
       <SystemStatusModal
         isOpen={isStatusModalOpen}
         onClose={() => setIsStatusModalOpen(false)}
