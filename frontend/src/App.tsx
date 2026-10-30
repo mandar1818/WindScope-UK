@@ -11,7 +11,6 @@ import { TestingLabPage } from './pages/TestingLabPage';
 import { MethodologyPage } from './pages/MethodologyPage';
 import { apiService } from './services/api';
 import { SourceStatus } from './types/api';
-import { Database, ShieldCheck, Zap } from 'lucide-react';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<string>('overview');
@@ -44,7 +43,7 @@ export function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#070d19] text-slate-100 flex flex-col font-sans selection:bg-accent-teal selection:text-navy-950">
+    <div className="min-h-screen bg-[#0b1220] text-slate-200 flex flex-col font-sans selection:bg-accent-teal selection:text-navy-950">
       {/* Financial Terminal Shell */}
       <div className="flex flex-1">
         {/* Left Navigation Sidebar */}
@@ -75,7 +74,7 @@ export function App() {
           />
 
           {/* Main Dashboard Pages Container */}
-          <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <main className="flex-1 w-full max-w-[1440px] mx-auto px-4 sm:px-6 xl:px-8 py-7">
             {activeTab === 'overview' && <OverviewPage onNavigate={setActiveTab} />}
             {activeTab === 'forecast' && <ForecastAnalysisPage />}
             {activeTab === 'accuracy' && <AccuracyAnalysisPage />}
@@ -86,12 +85,12 @@ export function App() {
           </main>
 
           {/* Enterprise Terminal Footer */}
-          <footer className="border-t border-navy-800/80 bg-[#070d19] py-5 text-xs text-slate-400 font-mono mt-auto">
+          <footer className="border-t border-slate-800 bg-[#0b1220] py-4 text-xs text-slate-500 mt-auto">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex flex-wrap items-center space-x-2">
-                <span className="font-bold text-slate-200">WindScope UK</span>
+                <span className="font-semibold text-slate-300">WindScope UK</span>
                 <span className="text-slate-600">&bull;</span>
-                <span className="text-accent-cyan">Enterprise Trading Analytics</span>
+                <span>Wind generation analytics</span>
                 <span className="text-slate-600">&bull;</span>
                 <span>GB National Wind Fleet</span>
               </div>
@@ -99,7 +98,7 @@ export function App() {
               <div className="text-center md:text-right text-[11px] text-slate-400 font-sans">
                 Elexon BMRS Datasets: FUELHH (Metered Outturn) &amp; WINDFOR (Day-Ahead Forecasts)
                 <div className="text-[10px] text-slate-400 mt-0.5 font-mono">
-                  Evaluation Scope: January 2026 &bull; Timestamps: Europe/London (GMT) / UTC
+                  Evaluation period: January 2026 &bull; Times shown in Europe/London / UTC
                 </div>
               </div>
             </div>
