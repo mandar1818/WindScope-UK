@@ -3,27 +3,57 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    color-scheme: dark;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+  }
+
+  html {
+    background: #0b1220;
+  }
+
   body {
-    @apply bg-navy-950 text-slate-100 antialiased font-sans selection:bg-accent-teal selection:text-navy-950;
+    @apply antialiased font-sans;
     min-height: 100vh;
+    margin: 0;
+    background: #0b1220;
+    color: #d7deea;
+    letter-spacing: -0.01em;
+  }
+
+  button, input, select, textarea {
+    font: inherit;
+  }
+
+  button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+    outline: 2px solid #7aa2c8;
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: #35516d;
+    color: #f8fafc;
   }
 }
 
-/* Custom crisp dark scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+/* Quiet, consistent scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #34445a #111b2b;
 }
 
-::-webkit-scrollbar-track {
-  background: #0b132b;
-}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #111b2b; }
+::-webkit-scrollbar-thumb { background: #34445a; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #4a5d75; }
 
-::-webkit-scrollbar-thumb {
-  background: #273458;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #3a4b7c;
+/* Reduce decorative motion; keep interaction feedback subtle. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
