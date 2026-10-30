@@ -39,51 +39,51 @@ export const MetricCard: React.FC<MetricCardProps> = ({
     }
   }
 
-  // Meaningful text accents for values
+  // Natural palette accents
   const valueColor = {
-    neutral: 'text-slate-100',
-    teal: 'text-sky-300',
-    green: 'text-emerald-400',
-    amber: 'text-amber-400',
-    red: 'text-rose-400',
+    neutral: 'text-nature-text',
+    teal: 'text-nature-forecast', // #5689B5
+    green: 'text-nature-actual', // #26966B
+    amber: 'text-nature-risk', // #D49A42
+    red: 'text-[#C54B4B]',
   }[highlight];
 
   return (
-    <div className="rounded-lg border border-slate-800/90 bg-[#0e1526] p-4 flex flex-col justify-between transition-colors hover:border-slate-700/80">
+    <div className="rounded-lg border border-nature-border bg-white p-4 flex flex-col justify-between transition-colors shadow-sm hover:border-nature-sage/60">
       <div>
         {/* Card Header */}
-        <div className="flex items-center justify-between text-slate-400 pb-1">
-          <span className="text-xs font-medium text-slate-300 truncate">
+        <div className="flex items-center justify-between text-nature-muted pb-1">
+          <span className="text-xs font-medium text-nature-text/80 truncate">
             {title}
           </span>
           {tooltip && (
-            <div className="cursor-help text-slate-500 hover:text-slate-300 transition-colors" title={tooltip}>
+            <div className="cursor-help text-nature-muted hover:text-nature-forest transition-colors" title={tooltip}>
               <Info className="h-3.5 w-3.5 flex-shrink-0" />
             </div>
           )}
         </div>
 
         {/* Primary Value */}
-        <div className="mt-1.5 flex items-baseline space-x-1.5">
+        <div className="mt-1 flex items-baseline space-x-1.5">
           <span
             className={`text-2xl font-semibold tracking-tight font-mono tabular-nums ${
-              isAvailable ? valueColor : 'text-slate-500 italic text-xl'
+              isAvailable ? valueColor : 'text-nature-muted/60 italic text-xl'
             }`}
           >
             {formattedValue}
           </span>
           {isAvailable && unit && (
-            <span className="text-xs font-mono text-slate-400">{unit}</span>
+            <span className="text-xs font-mono text-nature-muted font-medium">{unit}</span>
           )}
         </div>
       </div>
 
       {/* Subtitle / Context Note */}
       {(subtitle || statusBadge) && (
-        <div className="mt-2.5 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+        <div className="mt-2.5 pt-2 border-t border-nature-border/80 flex items-center justify-between text-[11px] text-nature-muted">
           {subtitle && <span className="truncate">{subtitle}</span>}
           {statusBadge && (
-            <span className="text-[10px] font-mono text-slate-400 bg-slate-800/80 px-1.5 py-0.5 rounded ml-auto flex-shrink-0">
+            <span className="text-[10px] font-mono text-nature-muted bg-nature-bg px-1.5 py-0.5 rounded border border-nature-border ml-auto flex-shrink-0">
               {statusBadge}
             </span>
           )}

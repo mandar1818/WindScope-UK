@@ -9,15 +9,15 @@ interface BadgeProps {
 export const Badge: React.FC<BadgeProps> = ({
   children,
   variant = 'slate',
-  size = 'md'
+  size = 'md',
 }) => {
   const variantStyles = {
-    teal: 'bg-cyan-950/80 text-accent-cyan border-cyan-800/60',
-    green: 'bg-emerald-950/80 text-accent-emerald border-emerald-800/60',
-    amber: 'bg-amber-950/80 text-accent-amber border-amber-800/60',
-    red: 'bg-red-950/80 text-red-400 border-red-800/60',
-    blue: 'bg-blue-950/80 text-blue-300 border-blue-800/60',
-    slate: 'bg-navy-800 text-slate-300 border-navy-700',
+    teal: 'bg-emerald-50 text-nature-forest border-emerald-200',
+    green: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+    amber: 'bg-amber-50 text-amber-800 border-amber-200',
+    red: 'bg-rose-50 text-rose-800 border-rose-200',
+    blue: 'bg-sky-50 text-sky-800 border-sky-200',
+    slate: 'bg-nature-bg text-nature-text border-nature-border',
   }[variant];
 
   const sizeStyles = {
@@ -31,4 +31,3 @@ export const Badge: React.FC<BadgeProps> = ({
     </span>
   );
 };
-

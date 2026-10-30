@@ -35,20 +35,20 @@ export const DataExplorerPage: React.FC = () => {
   return (
     <div className="space-y-4">
       {/* Control Header Ribbon */}
-      <div className="rounded-lg border border-slate-800 bg-[#0e1526] p-3.5 space-y-3">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-2.5 border-b border-slate-800 gap-2">
+      <div className="rounded-lg border border-nature-border bg-white p-3.5 space-y-3 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-2.5 border-b border-nature-border gap-2">
           <div>
-            <h2 className="text-base font-semibold text-slate-100">
+            <h2 className="text-base font-semibold text-nature-text">
               Half-Hourly Settlement Observations &amp; Raw Data Export
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-nature-muted mt-0.5">
               Inspect granular metered FUELHH actual generation paired with point-in-time selected WINDFOR forecasts
             </p>
           </div>
 
           <div className="flex items-center space-x-2 text-xs font-mono">
-            <span className="px-2.5 py-1 rounded bg-slate-900 border border-slate-800 text-slate-300">
-              Delivery Date: <strong className="text-slate-100">{selectedDate}</strong>
+            <span className="px-2.5 py-1 rounded-md bg-nature-bg border border-nature-border text-nature-text font-medium">
+              Delivery Date: <strong className="text-nature-forest">{selectedDate}</strong>
             </span>
           </div>
         </div>

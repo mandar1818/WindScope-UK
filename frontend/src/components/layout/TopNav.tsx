@@ -5,7 +5,6 @@ import {
   AlertTriangle,
   RefreshCw,
   Clock,
-  Layers,
 } from 'lucide-react';
 import { SourceStatus } from '../../types/api';
 
@@ -67,21 +66,21 @@ export const TopNav: React.FC<TopNavProps> = ({
     : null;
 
   return (
-    <header className="sticky top-0 z-30 bg-[#0b101d]/95 backdrop-blur-sm border-b border-slate-800/80">
+    <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b border-nature-border">
       {/* Demonstration Banner if active */}
       {isDemo && (
-        <div className="bg-amber-950/90 border-b border-amber-700/60 text-amber-200 px-4 py-1.5 text-xs flex items-center justify-between font-mono">
+        <div className="bg-nature-risk-light border-b border-nature-risk/30 text-[#8C611C] px-4 py-1.5 text-xs flex items-center justify-between font-mono">
           <div className="flex items-center space-x-2">
-            <AlertTriangle className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
-            <span className="font-semibold text-amber-300">DEMONSTRATION MODE:</span>
-            <span className="text-amber-200/90 hidden sm:inline font-sans">
+            <AlertTriangle className="w-3.5 h-3.5 text-nature-risk flex-shrink-0" />
+            <span className="font-semibold text-nature-risk">DEMONSTRATION MODE:</span>
+            <span className="text-[#8C611C] hidden sm:inline font-sans">
               {sourceStatus?.demonstration_notice ||
                 'Synthetic benchmark observations active. Live Elexon API is unreachable.'}
             </span>
           </div>
           <button
             onClick={onOpenStatusModal}
-            className="text-[10px] bg-amber-900/60 hover:bg-amber-800/80 px-2 py-0.5 rounded border border-amber-600/70 text-amber-100 transition-colors"
+            className="text-[10px] bg-white hover:bg-[#F8EFE1] px-2 py-0.5 rounded border border-nature-risk/40 text-nature-risk transition-colors"
           >
             Details
           </button>
@@ -94,7 +93,7 @@ export const TopNav: React.FC<TopNavProps> = ({
         <div className="flex items-center space-x-3 truncate">
           <button
             onClick={onOpenMobileSidebar}
-            className="lg:hidden p-1.5 rounded text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors"
+            className="lg:hidden p-1.5 rounded-md text-nature-muted hover:text-nature-text hover:bg-nature-bg transition-colors"
             title="Open Menu"
           >
             <Menu className="w-5 h-5" />
@@ -102,15 +101,15 @@ export const TopNav: React.FC<TopNavProps> = ({
 
           <div className="truncate">
             <div className="flex items-center space-x-2">
-              <span className="text-xs font-mono text-slate-400 hidden sm:inline">
+              <span className="text-xs font-mono text-nature-muted hidden sm:inline">
                 WindScope UK
               </span>
-              <span className="text-slate-600 hidden sm:inline">/</span>
-              <h1 className="text-sm font-semibold text-slate-100 truncate">
+              <span className="text-nature-border hidden sm:inline">/</span>
+              <h1 className="text-sm font-semibold text-nature-text truncate">
                 {currentTabInfo.title}
               </h1>
             </div>
-            <p className="text-[11px] text-slate-400 truncate hidden md:block">
+            <p className="text-[11px] text-nature-muted truncate hidden md:block">
               {currentTabInfo.subtitle}
             </p>
           </div>
@@ -119,29 +118,29 @@ export const TopNav: React.FC<TopNavProps> = ({
         {/* Right: Operational Status Badges */}
         <div className="flex items-center space-x-2 font-mono text-xs flex-shrink-0">
           {/* GB Market Scope Indicator */}
-          <div className="hidden lg:flex items-center space-x-1.5 px-2.5 py-1 rounded bg-slate-900 border border-slate-800 text-slate-300 text-[11px]">
-            <span className="text-slate-400">Market:</span>
-            <span className="text-slate-200 font-sans font-medium">GB (GMT)</span>
+          <div className="hidden lg:flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-nature-bg border border-nature-border text-nature-muted text-[11px]">
+            <span>Market:</span>
+            <span className="text-nature-text font-sans font-medium">GB (GMT)</span>
           </div>
 
           {/* Scope Badge */}
-          <div className="hidden sm:inline-flex items-center px-2 py-1 rounded bg-slate-900 border border-slate-800 text-slate-300 text-[11px]">
-            <span>Jan 2026</span>
+          <div className="hidden sm:inline-flex items-center px-2.5 py-1 rounded-md bg-nature-bg border border-nature-border text-nature-muted text-[11px]">
+            <span>Jan 2026 Scope</span>
           </div>
 
           {/* Elexon Data Source Status */}
           <button
             onClick={onOpenStatusModal}
-            className={`flex items-center space-x-1.5 px-2.5 py-1 rounded border text-[11px] transition-colors ${
+            className={`flex items-center space-x-1.5 px-2.5 py-1 rounded-md border text-[11px] transition-colors ${
               isDemo
-                ? 'bg-amber-950/60 border-amber-800/80 text-amber-300 hover:bg-amber-900/60'
-                : 'bg-emerald-950/60 border-emerald-800/80 text-emerald-300 hover:bg-emerald-900/60'
+                ? 'bg-nature-risk-light border-nature-risk/30 text-nature-risk hover:bg-[#F9EDE0]'
+                : 'bg-nature-forest-light border-nature-border text-nature-forest hover:bg-nature-forest-light/80'
             }`}
             title="View Data Pipeline Telemetry"
           >
             <span
               className={`w-1.5 h-1.5 rounded-full ${
-                isDemo ? 'bg-amber-400' : 'bg-emerald-400'
+                isDemo ? 'bg-nature-risk' : 'bg-nature-actual'
               }`}
             />
             <span className="font-sans font-medium">
@@ -151,8 +150,8 @@ export const TopNav: React.FC<TopNavProps> = ({
 
           {/* Last Updated Timestamp */}
           {formattedLastUpdated && (
-            <div className="hidden xl:flex items-center space-x-1 text-[11px] text-slate-400 px-2 py-1 rounded bg-slate-900/80 border border-slate-800">
-              <Clock className="w-3 h-3 text-slate-500" />
+            <div className="hidden xl:flex items-center space-x-1 text-[11px] text-nature-muted px-2 py-1 rounded-md bg-nature-bg border border-nature-border">
+              <Clock className="w-3 h-3 text-nature-muted" />
               <span>{formattedLastUpdated}</span>
             </div>
           )}
@@ -161,7 +160,7 @@ export const TopNav: React.FC<TopNavProps> = ({
           {onRefresh && (
             <button
               onClick={onRefresh}
-              className="p-1.5 rounded bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-800 transition-colors"
+              className="p-1.5 rounded-md bg-white hover:bg-nature-bg text-nature-muted hover:text-nature-text border border-nature-border transition-colors shadow-sm"
               title="Refresh Data"
             >
               <RefreshCw className="w-3.5 h-3.5" />

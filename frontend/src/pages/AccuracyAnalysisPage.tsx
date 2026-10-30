@@ -45,20 +45,20 @@ export const AccuracyAnalysisPage: React.FC = () => {
   return (
     <div className="space-y-4">
       {/* Control Header */}
-      <div className="rounded-lg border border-slate-800 bg-[#0e1526] p-3.5 space-y-3">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-2.5 border-b border-slate-800 gap-2">
+      <div className="rounded-lg border border-nature-border bg-white p-3.5 space-y-3 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-2.5 border-b border-nature-border gap-2">
           <div>
-            <h2 className="text-base font-semibold text-slate-100">
+            <h2 className="text-base font-semibold text-nature-text">
               Multi-Day Forecast Accuracy Evaluation
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-nature-muted mt-0.5">
               Portfolio error distributions, volumetric WAPE, and systematic forecast bias across January 2026
             </p>
           </div>
 
           <div className="flex items-center space-x-2 text-xs font-mono">
-            <span className="px-2.5 py-1 rounded bg-slate-900 border border-slate-800 text-slate-300">
-              Window: <strong className="text-slate-100">{startDate} &rarr; {endDate}</strong>
+            <span className="px-2.5 py-1 rounded-md bg-nature-bg border border-nature-border text-nature-text font-medium">
+              Window: <strong className="text-nature-forest">{startDate} &rarr; {endDate}</strong>
             </span>
           </div>
         </div>
@@ -66,9 +66,9 @@ export const AccuracyAnalysisPage: React.FC = () => {
         {/* Filters */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-2.5">
           {/* Date Range Selector */}
-          <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 bg-slate-900/60 p-2.5 rounded-lg border border-slate-800">
-            <div className="flex items-center space-x-1.5 text-xs font-medium text-slate-300">
-              <Calculator className="w-3.5 h-3.5 text-sky-400" />
+          <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 bg-nature-bg p-2.5 rounded-lg border border-nature-border">
+            <div className="flex items-center space-x-1.5 text-xs font-medium text-nature-text">
+              <Calculator className="w-3.5 h-3.5 text-nature-forest" />
               <span>Range:</span>
             </div>
 
@@ -80,9 +80,9 @@ export const AccuracyAnalysisPage: React.FC = () => {
                 value={startDate}
                 disabled={loading}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="bg-slate-900 border border-slate-700 rounded px-2.5 py-1 text-xs font-mono font-medium text-slate-100 focus:outline-none focus:border-sky-500 cursor-pointer"
+                className="bg-white border border-nature-border rounded-md px-2.5 py-1 text-xs font-mono font-medium text-nature-text focus:outline-none focus:border-nature-forest cursor-pointer"
               />
-              <span className="text-slate-500 text-xs font-mono">to</span>
+              <span className="text-nature-muted text-xs font-mono">to</span>
               <input
                 type="date"
                 min="2026-01-01"
@@ -90,7 +90,7 @@ export const AccuracyAnalysisPage: React.FC = () => {
                 value={endDate}
                 disabled={loading}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="bg-slate-900 border border-slate-700 rounded px-2.5 py-1 text-xs font-mono font-medium text-slate-100 focus:outline-none focus:border-sky-500 cursor-pointer"
+                className="bg-white border border-nature-border rounded-md px-2.5 py-1 text-xs font-mono font-medium text-nature-text focus:outline-none focus:border-nature-forest cursor-pointer"
               />
             </div>
 
@@ -100,7 +100,7 @@ export const AccuracyAnalysisPage: React.FC = () => {
                   setStartDate('2026-01-01');
                   setEndDate('2026-01-07');
                 }}
-                className="px-2 py-0.5 text-[11px] font-mono rounded bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700/60 transition-colors"
+                className="px-2 py-0.5 text-[11px] font-mono rounded-md bg-white text-nature-muted hover:text-nature-text border border-nature-border transition-colors"
               >
                 W1
               </button>
@@ -109,7 +109,7 @@ export const AccuracyAnalysisPage: React.FC = () => {
                   setStartDate('2026-01-01');
                   setEndDate('2026-01-15');
                 }}
-                className="px-2 py-0.5 text-[11px] font-mono rounded bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700/60 transition-colors"
+                className="px-2 py-0.5 text-[11px] font-mono rounded-md bg-white text-nature-muted hover:text-nature-text border border-nature-border transition-colors"
               >
                 1-15 Jan
               </button>
@@ -118,7 +118,7 @@ export const AccuracyAnalysisPage: React.FC = () => {
                   setStartDate('2026-01-01');
                   setEndDate('2026-01-31');
                 }}
-                className="px-2 py-0.5 text-[11px] font-mono rounded bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700/60 transition-colors"
+                className="px-2 py-0.5 text-[11px] font-mono rounded-md bg-white text-nature-muted hover:text-nature-text border border-nature-border transition-colors"
               >
                 Full Jan
               </button>
@@ -151,10 +151,10 @@ export const AccuracyAnalysisPage: React.FC = () => {
         <>
           {/* Missing Data Notice if applicable */}
           {data.aggregate_metrics.excluded_observations > 0 && (
-            <div className="rounded border border-amber-800/80 bg-amber-950/40 p-3 text-xs text-amber-200 flex items-start space-x-2.5">
-              <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+            <div className="rounded-lg border border-nature-risk/40 bg-nature-risk-light p-3 text-xs text-[#8C611C] flex items-start space-x-2.5">
+              <AlertTriangle className="w-4 h-4 text-nature-risk flex-shrink-0 mt-0.5" />
               <div className="font-sans">
-                <span className="font-semibold text-amber-300">Observation Filter Note:</span>{' '}
+                <span className="font-semibold text-nature-risk">Observation Filter Note:</span>{' '}
                 {data.aggregate_metrics.excluded_observations} settlement periods were excluded because either metered actual generation or valid forecast was absent.
                 Metrics are computed across the {data.aggregate_metrics.valid_observations} complete matched pairs.
               </div>
@@ -218,28 +218,28 @@ export const AccuracyAnalysisPage: React.FC = () => {
           {(bestDay || worstDay) && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
               {bestDay && (
-                <div className="p-3 rounded-lg bg-[#0e1526] border border-slate-800 flex justify-between items-center">
+                <div className="p-3 rounded-lg bg-white border border-nature-border flex justify-between items-center shadow-sm">
                   <div>
-                    <span className="text-slate-400 text-[11px] block font-sans">Lowest Error Delivery Day:</span>
-                    <strong className="text-emerald-400 font-bold text-sm">{bestDay.settlement_date}</strong>
+                    <span className="text-nature-muted text-[11px] block font-sans">Lowest Error Delivery Day:</span>
+                    <strong className="text-nature-actual font-bold text-sm">{bestDay.settlement_date}</strong>
                   </div>
                   <div className="text-right">
-                    <span className="text-slate-400 text-[11px] block font-sans">Daily MAE:</span>
-                    <strong className="text-emerald-400 font-bold text-sm tabular-nums">
+                    <span className="text-nature-muted text-[11px] block font-sans">Daily MAE:</span>
+                    <strong className="text-nature-actual font-bold text-sm tabular-nums">
                       {bestDay.mae_mw?.toLocaleString()} MW
                     </strong>
                   </div>
                 </div>
               )}
               {worstDay && (
-                <div className="p-3 rounded-lg bg-[#0e1526] border border-slate-800 flex justify-between items-center">
+                <div className="p-3 rounded-lg bg-white border border-nature-border flex justify-between items-center shadow-sm">
                   <div>
-                    <span className="text-slate-400 text-[11px] block font-sans">Highest Error Delivery Day:</span>
-                    <strong className="text-amber-400 font-bold text-sm">{worstDay.settlement_date}</strong>
+                    <span className="text-nature-muted text-[11px] block font-sans">Highest Error Delivery Day:</span>
+                    <strong className="text-nature-risk font-bold text-sm">{worstDay.settlement_date}</strong>
                   </div>
                   <div className="text-right">
-                    <span className="text-slate-400 text-[11px] block font-sans">Daily MAE:</span>
-                    <strong className="text-amber-400 font-bold text-sm tabular-nums">
+                    <span className="text-nature-muted text-[11px] block font-sans">Daily MAE:</span>
+                    <strong className="text-nature-risk font-bold text-sm tabular-nums">
                       {worstDay.mae_mw?.toLocaleString()} MW
                     </strong>
                   </div>

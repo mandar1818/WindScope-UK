@@ -550,13 +550,13 @@ export const TestingLabPage: React.FC = () => {
   return (
     <div className="space-y-4">
       {/* Header Banner */}
-      <div className="rounded-lg border border-slate-800 bg-[#0e1526] p-3.5 space-y-3">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-2.5 border-b border-slate-800 gap-2">
+      <div className="rounded-lg border border-nature-border bg-white p-4 space-y-3.5 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-3 border-b border-nature-border gap-2">
           <div className="space-y-0.5">
-            <h2 className="text-base font-semibold text-slate-100">
+            <h2 className="text-base font-semibold text-nature-text">
               Interactive Analytical Verification &amp; Testing Lab
             </h2>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-nature-muted">
               Automated testing suite executing live mathematical verification against backend endpoints and real Elexon data
             </p>
           </div>
@@ -566,7 +566,7 @@ export const TestingLabPage: React.FC = () => {
             <button
               onClick={handleRunAllTests}
               disabled={isRunningAll}
-              className="inline-flex items-center space-x-2 px-3 py-1.5 rounded bg-sky-700 hover:bg-sky-600 text-white font-medium text-xs transition-colors disabled:opacity-50"
+              className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-md bg-nature-forest hover:bg-nature-forest-hover text-white font-medium text-xs transition-colors disabled:opacity-50 shadow-sm"
             >
               <Play className="w-3.5 h-3.5 fill-white" />
               <span>{isRunningAll ? 'Executing Suite...' : 'Run All 6 Tests'}</span>
@@ -574,7 +574,7 @@ export const TestingLabPage: React.FC = () => {
             <button
               onClick={handleReset}
               disabled={isRunningAll}
-              className="p-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 border border-slate-700 transition-colors"
+              className="p-1.5 rounded-md bg-nature-bg hover:bg-nature-border/50 text-nature-muted hover:text-nature-text border border-nature-border transition-colors"
               title="Reset Test Status"
             >
               <RotateCcw className="w-3.5 h-3.5" />
@@ -583,7 +583,7 @@ export const TestingLabPage: React.FC = () => {
         </div>
 
         {/* Global Parameter Controls */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2.5">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
           <DateSelector
             selectedDate={selectedDate}
             onChange={setSelectedDate}
@@ -597,30 +597,30 @@ export const TestingLabPage: React.FC = () => {
         </div>
 
         {/* Suite Health Progress Strip */}
-        <div className="rounded bg-slate-900/80 p-2.5 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-mono">
+        <div className="rounded-md bg-nature-bg p-2.5 border border-nature-border flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-mono">
           <div className="flex items-center space-x-3">
-            <span className="text-slate-400 font-sans font-medium">Suite Status:</span>
-            <span className="flex items-center space-x-1 text-emerald-400 font-semibold">
+            <span className="text-nature-muted font-sans font-medium">Suite Status:</span>
+            <span className="flex items-center space-x-1 text-nature-actual font-semibold">
               <CheckCircle2 className="w-3.5 h-3.5" />
               <span>{passedCount} Passed</span>
             </span>
             {failedCount > 0 && (
-              <span className="flex items-center space-x-1 text-rose-400 font-semibold">
+              <span className="flex items-center space-x-1 text-rose-600 font-semibold">
                 <XCircle className="w-3.5 h-3.5" />
                 <span>{failedCount} Failed</span>
               </span>
             )}
-            <span className="text-slate-500">({testList.length - passedCount - failedCount} Not Run)</span>
+            <span className="text-nature-muted">({testList.length - passedCount - failedCount} Not Run)</span>
           </div>
 
           <div className="flex items-center space-x-2">
-            <div className="w-32 h-1.5 rounded-full bg-slate-800 overflow-hidden">
+            <div className="w-32 h-1.5 rounded-full bg-nature-border overflow-hidden">
               <div
-                className="h-full bg-sky-500 transition-all duration-300"
+                className="h-full bg-nature-forest transition-all duration-300"
                 style={{ width: `${(passedCount / testList.length) * 100}%` }}
               />
             </div>
-            <span className="text-slate-300 font-semibold">
+            <span className="text-nature-text font-semibold">
               {Math.round((passedCount / testList.length) * 100)}%
             </span>
           </div>
@@ -638,14 +638,14 @@ export const TestingLabPage: React.FC = () => {
           return (
             <div
               key={test.id}
-              className={`rounded-lg border transition-colors ${
+              className={`rounded-lg border transition-colors shadow-sm ${
                 isPassed
-                  ? 'border-emerald-800/80 bg-[#0e1724]'
+                  ? 'border-emerald-200 bg-white'
                   : isFailed
-                  ? 'border-rose-800/80 bg-[#170e14]'
+                  ? 'border-rose-200 bg-rose-50/30'
                   : isRunning
-                  ? 'border-sky-800/80 bg-[#0e1628]'
-                  : 'border-slate-800/90 bg-[#0e1526]'
+                  ? 'border-nature-forecast/40 bg-nature-bg'
+                  : 'border-nature-border bg-white'
               }`}
             >
               {/* Test Header Row */}
@@ -655,20 +655,20 @@ export const TestingLabPage: React.FC = () => {
               >
                 <div className="flex items-start sm:items-center space-x-3">
                   <div className="mt-0.5 sm:mt-0">
-                    {isPassed && <CheckCircle2 className="w-4 h-4 text-emerald-400" />}
-                    {isFailed && <XCircle className="w-4 h-4 text-rose-400" />}
-                    {isRunning && <Clock className="w-4 h-4 text-sky-400 animate-spin" />}
-                    {test.status === 'NOT_RUN' && <Clock className="w-4 h-4 text-slate-500" />}
+                    {isPassed && <CheckCircle2 className="w-4 h-4 text-nature-actual" />}
+                    {isFailed && <XCircle className="w-4 h-4 text-rose-600" />}
+                    {isRunning && <Clock className="w-4 h-4 text-nature-forecast animate-spin" />}
+                    {test.status === 'NOT_RUN' && <Clock className="w-4 h-4 text-nature-muted" />}
                   </div>
 
                   <div>
                     <div className="flex items-center space-x-2">
-                      <h3 className="text-xs font-semibold text-slate-100 font-sans">{test.name}</h3>
-                      <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-900 text-slate-400 border border-slate-800">
+                      <h3 className="text-xs font-semibold text-nature-text font-sans">{test.name}</h3>
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-nature-bg text-nature-muted border border-nature-border">
                         {test.category}
                       </span>
                     </div>
-                    <p className="text-[11px] text-slate-400 font-sans mt-0.5">{test.description}</p>
+                    <p className="text-[11px] text-nature-muted font-sans mt-0.5">{test.description}</p>
                   </div>
                 </div>
 
@@ -677,12 +677,12 @@ export const TestingLabPage: React.FC = () => {
                   <span
                     className={`text-[11px] font-mono px-2 py-0.5 rounded border ${
                       isPassed
-                        ? 'bg-emerald-950/80 text-emerald-400 border-emerald-800/80 font-bold'
+                        ? 'bg-emerald-50 text-emerald-800 border-emerald-200 font-bold'
                         : isFailed
-                        ? 'bg-rose-950/80 text-rose-400 border-rose-800/80 font-bold'
+                        ? 'bg-rose-50 text-rose-800 border-rose-200 font-bold'
                         : isRunning
-                        ? 'bg-sky-950/80 text-sky-300 border-sky-800/80 font-bold'
-                        : 'bg-slate-900 text-slate-400 border-slate-800'
+                        ? 'bg-sky-50 text-sky-800 border-sky-200 font-bold'
+                        : 'bg-nature-bg text-nature-muted border-nature-border'
                     }`}
                   >
                     {test.status}
@@ -700,43 +700,43 @@ export const TestingLabPage: React.FC = () => {
                       if (test.id === 'test-6') runTest6(selectedDate, selectedCutoff);
                     }}
                     disabled={isRunningAll || isRunning}
-                    className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-sans transition-colors disabled:opacity-50"
+                    className="px-2.5 py-1 rounded bg-nature-bg hover:bg-nature-border/50 text-nature-text border border-nature-border text-xs font-sans transition-colors disabled:opacity-50"
                   >
                     {isRunning ? 'Running...' : 'Run Test'}
                   </button>
 
                   {isExpanded ? (
-                    <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                    <ChevronDown className="w-3.5 h-3.5 text-nature-muted" />
                   ) : (
-                    <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                    <ChevronRight className="w-3.5 h-3.5 text-nature-muted" />
                   )}
                 </div>
               </div>
 
               {/* Expanded Verification Details */}
               {isExpanded && (
-                <div className="px-3.5 pb-3.5 pt-1 border-t border-slate-800/80 space-y-2.5 text-xs font-mono">
+                <div className="px-3.5 pb-3.5 pt-1 border-t border-nature-border space-y-2.5 text-xs font-mono">
                   {/* Expected vs User Action */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 pt-1 font-sans">
-                    <div className="p-2.5 rounded bg-slate-900 border border-slate-800 space-y-1">
-                      <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
+                    <div className="p-2.5 rounded bg-nature-bg border border-nature-border space-y-1">
+                      <span className="text-[10px] font-semibold text-nature-muted uppercase tracking-wider block">
                         Action Executed
                       </span>
-                      <p className="text-slate-300 text-xs">{test.userAction}</p>
+                      <p className="text-nature-text text-xs">{test.userAction}</p>
                     </div>
 
-                    <div className="p-2.5 rounded bg-slate-900 border border-slate-800 space-y-1">
-                      <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
+                    <div className="p-2.5 rounded bg-nature-bg border border-nature-border space-y-1">
+                      <span className="text-[10px] font-semibold text-nature-muted uppercase tracking-wider block">
                         Expected Contract Result
                       </span>
-                      <p className="text-slate-300 text-xs">{test.expectedResult}</p>
+                      <p className="text-nature-text text-xs">{test.expectedResult}</p>
                     </div>
                   </div>
 
                   {/* Actual Results Outcome */}
                   {test.actualResult && (
-                    <div className="p-3 rounded bg-emerald-950/30 border border-emerald-800/60 text-emerald-200 font-sans space-y-1">
-                      <span className="text-[10px] font-semibold uppercase tracking-wider block text-emerald-400">
+                    <div className="p-3 rounded bg-emerald-50/80 border border-emerald-200 text-emerald-950 font-sans space-y-1">
+                      <span className="text-[10px] font-semibold uppercase tracking-wider block text-emerald-800">
                         Live Execution Outcome
                       </span>
                       <p className="text-xs leading-relaxed">{test.actualResult}</p>
@@ -745,8 +745,8 @@ export const TestingLabPage: React.FC = () => {
 
                   {/* Error Outcome */}
                   {test.errorMessage && (
-                    <div className="p-3 rounded bg-rose-950/40 border border-rose-800/70 text-rose-200 font-sans space-y-1">
-                      <span className="text-[10px] font-semibold uppercase tracking-wider block text-rose-400">
+                    <div className="p-3 rounded bg-rose-50/80 border border-rose-200 text-rose-950 font-sans space-y-1">
+                      <span className="text-[10px] font-semibold uppercase tracking-wider block text-rose-800">
                         Test Failure Details
                       </span>
                       <p className="text-xs leading-relaxed">{test.errorMessage}</p>
@@ -755,17 +755,17 @@ export const TestingLabPage: React.FC = () => {
 
                   {/* Key/Value Telemetry */}
                   {test.details && (
-                    <div className="p-2.5 rounded bg-slate-900 border border-slate-800 space-y-2">
-                      <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block font-sans">
+                    <div className="p-2.5 rounded bg-nature-bg border border-nature-border space-y-2">
+                      <span className="text-[10px] font-semibold text-nature-muted uppercase tracking-wider block font-sans">
                         Audit Data Telemetry
                       </span>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs">
                         {Object.entries(test.details).map(([key, val]) => (
-                          <div key={key} className="flex justify-between items-center p-1.5 rounded bg-slate-850 border border-slate-800">
-                            <span className="text-slate-400 font-sans capitalize text-[11px]">
+                          <div key={key} className="flex justify-between items-center p-1.5 rounded bg-white border border-nature-border">
+                            <span className="text-nature-muted font-sans capitalize text-[11px]">
                               {key.replace(/([A-Z])/g, ' $1')}:
                             </span>
-                            <span className="font-semibold text-slate-200 truncate ml-2 tabular-nums">
+                            <span className="font-semibold text-nature-text truncate ml-2 tabular-nums">
                               {typeof val === 'object' ? JSON.stringify(val) : String(val)}
                             </span>
                           </div>
@@ -776,9 +776,9 @@ export const TestingLabPage: React.FC = () => {
                         <div className="pt-1.5 flex justify-end">
                           <button
                             onClick={handleDownloadSampleCsv}
-                            className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-sans text-xs transition-colors"
+                            className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded bg-white hover:bg-nature-bg text-nature-forest border border-nature-border font-sans text-xs transition-colors shadow-sm"
                           >
-                            <Download className="w-3.5 h-3.5 text-sky-400" />
+                            <Download className="w-3.5 h-3.5 text-nature-forest" />
                             <span>Download Validated CSV Sample</span>
                           </button>
                         </div>

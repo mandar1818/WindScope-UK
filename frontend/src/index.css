@@ -4,26 +4,26 @@
 
 @layer base {
   body {
-    @apply bg-[#080d1a] text-slate-100 antialiased font-sans selection:bg-sky-500/30 selection:text-white;
+    @apply bg-nature-bg text-nature-text antialiased font-sans selection:bg-nature-forest/15 selection:text-nature-forest;
     min-height: 100vh;
   }
 }
 
-/* Subtle enterprise dark scrollbar */
+/* Crisp natural light scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #080d1a;
+  background: #F5F7F2;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
+  background: #D5DDD3;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: #B4C0B1;
 }

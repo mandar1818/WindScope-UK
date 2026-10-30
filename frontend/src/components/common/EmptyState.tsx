@@ -17,26 +17,26 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   onAction,
 }) => {
   return (
-    <div className="rounded-lg border border-slate-800 bg-[#0e1526] p-8 text-center flex flex-col items-center justify-center space-y-3">
-      <div className="p-2.5 rounded-full bg-slate-800 text-slate-400">
+    <div className="rounded-lg border border-nature-border bg-white p-8 text-center flex flex-col items-center justify-center space-y-3 shadow-sm">
+      <div className="p-2.5 rounded-full bg-nature-bg border border-nature-border text-nature-forest">
         {icon === 'database' ? (
-          <Database className="w-5 h-5 text-sky-400" />
+          <Database className="w-5 h-5 text-nature-forest" />
         ) : (
-          <AlertCircle className="w-5 h-5 text-amber-400" />
+          <AlertCircle className="w-5 h-5 text-nature-risk" />
         )}
       </div>
 
       <div className="max-w-md space-y-1">
-        <h4 className="text-sm font-semibold text-slate-200">{title}</h4>
-        <p className="text-xs text-slate-400 leading-relaxed">{message}</p>
+        <h4 className="text-sm font-semibold text-nature-text">{title}</h4>
+        <p className="text-xs text-nature-muted leading-relaxed">{message}</p>
       </div>
 
       {actionLabel && onAction && (
         <button
           onClick={onAction}
-          className="mt-2 inline-flex items-center space-x-1.5 px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 border border-slate-700 transition-colors"
+          className="mt-2 inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-white hover:bg-nature-bg text-xs font-medium text-nature-forest border border-nature-border transition-colors shadow-xs"
         >
-          <RefreshCw className="w-3.5 h-3.5 text-sky-400" />
+          <RefreshCw className="w-3.5 h-3.5 text-nature-forest" />
           <span>{actionLabel}</span>
         </button>
       )}

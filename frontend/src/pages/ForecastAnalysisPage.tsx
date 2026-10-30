@@ -80,20 +80,20 @@ export const ForecastAnalysisPage: React.FC = () => {
   return (
     <div className="space-y-4">
       {/* Control Header */}
-      <div className="rounded-lg border border-slate-800 bg-[#0e1526] p-3.5 space-y-3">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-2.5 border-b border-slate-800 gap-2">
+      <div className="rounded-lg border border-nature-border bg-white p-3.5 space-y-3 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-2.5 border-b border-nature-border gap-2">
           <div>
-            <h2 className="text-base font-semibold text-slate-100">
+            <h2 className="text-base font-semibold text-nature-text">
               Forecast Selection &amp; Evolution Analysis
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-nature-muted mt-0.5">
               Inspect multi-horizon forecast revisions and evaluate point-in-time selection against statutory trading cutoffs
             </p>
           </div>
 
           <div className="flex items-center space-x-2 text-xs font-mono">
-            <span className="px-2.5 py-1 rounded bg-slate-900 border border-slate-800 text-slate-300">
-              Period: <strong className="text-slate-100">SP {selectedPeriod}</strong> ({activePoint?.start_time_local.split(' ')[1] || 'N/A'})
+            <span className="px-2.5 py-1 rounded-md bg-nature-bg border border-nature-border text-nature-text font-medium">
+              Period: <strong className="text-nature-forest">SP {selectedPeriod}</strong> ({activePoint?.start_time_local.split(' ')[1] || 'N/A'})
             </span>
           </div>
         </div>
@@ -132,16 +132,16 @@ export const ForecastAnalysisPage: React.FC = () => {
           />
 
           {/* Settlement Period Selector Timeline (1-48) */}
-          <div className="rounded-lg border border-slate-800 bg-[#0e1526] p-3.5 space-y-2.5">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+          <div className="rounded-lg border border-nature-border bg-white p-3.5 space-y-2.5 shadow-sm">
+            <div className="flex items-center justify-between pb-2 border-b border-nature-border">
               <div className="flex items-center space-x-2">
-                <Clock className="w-3.5 h-3.5 text-sky-400" />
-                <h3 className="text-xs font-medium text-slate-200">
+                <Clock className="w-3.5 h-3.5 text-nature-forest" />
+                <h3 className="text-xs font-medium text-nature-text">
                   Settlement Period Selector (48 Half-Hour Intervals)
                 </h3>
               </div>
-              <span className="text-xs text-slate-400 font-mono">
-                Active: <strong className="text-sky-300">SP {selectedPeriod}</strong> ({activePoint?.start_time_local ?? 'N/A'})
+              <span className="text-xs text-nature-muted font-mono">
+                Active: <strong className="text-nature-forest">SP {selectedPeriod}</strong> ({activePoint?.start_time_local ?? 'N/A'})
               </span>
             </div>
 
@@ -155,8 +155,8 @@ export const ForecastAnalysisPage: React.FC = () => {
                     onClick={() => setSelectedPeriod(p.settlement_period)}
                     className={`p-1 text-center rounded text-[11px] font-mono transition-colors ${
                       isSelected
-                        ? 'bg-sky-900/80 text-sky-200 font-bold border border-sky-600'
-                        : 'bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800'
+                        ? 'bg-nature-forest text-white font-bold shadow-sm'
+                        : 'bg-nature-bg text-nature-text hover:bg-[#EAEFE9] border border-nature-border'
                     }`}
                     title={`SP ${p.settlement_period} (${p.start_time_local.split(' ')[1]}): ${
                       p.actual_generation_mw !== null ? `${p.actual_generation_mw.toLocaleString()} MW` : 'Missing'
@@ -165,11 +165,13 @@ export const ForecastAnalysisPage: React.FC = () => {
                     <div>{p.settlement_period}</div>
                     <div
                       className={`text-[9px] ${
-                        err !== null && err > 0
-                          ? 'text-amber-400'
+                        isSelected
+                          ? 'text-white/80'
+                          : err !== null && err > 0
+                          ? 'text-nature-risk'
                           : err !== null && err < 0
-                          ? 'text-sky-400'
-                          : 'text-slate-500'
+                          ? 'text-nature-forecast'
+                          : 'text-nature-muted'
                       }`}
                     >
                       {p.start_time_local.split(' ')[1]?.slice(0, 5)}
@@ -181,15 +183,15 @@ export const ForecastAnalysisPage: React.FC = () => {
           </div>
 
           {/* Deep-Dive Waterfall Section */}
-          <div className="rounded-lg border border-slate-800 bg-[#0e1526] p-4 space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-3 border-b border-slate-800 gap-2">
+          <div className="rounded-lg border border-nature-border bg-white p-4 space-y-4 shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-3 border-b border-nature-border gap-2">
               <div className="flex items-center space-x-2">
-                <History className="w-4 h-4 text-sky-400" />
+                <History className="w-4 h-4 text-nature-forest" />
                 <div>
-                  <h3 className="text-sm font-semibold text-slate-100">
+                  <h3 className="text-sm font-semibold text-nature-text">
                     Settlement Period {selectedPeriod} Forecast Evolution Waterfall
                   </h3>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-nature-muted">
                     Delivery Interval: {historyData?.target_delivery_time_local || activePoint?.start_time_local}
                   </p>
                 </div>
@@ -197,17 +199,17 @@ export const ForecastAnalysisPage: React.FC = () => {
 
               {/* Side-by-side snapshot */}
               <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
-                <div className="px-2.5 py-1 rounded bg-slate-900 border border-slate-800">
-                  <span className="text-slate-400">Actual Outturn: </span>
-                  <strong className="text-emerald-400 tabular-nums">
+                <div className="px-2.5 py-1 rounded-md bg-nature-bg border border-nature-border">
+                  <span className="text-nature-muted">Actual Outturn: </span>
+                  <strong className="text-nature-actual tabular-nums">
                     {activePoint?.actual_generation_mw !== null
                       ? `${activePoint?.actual_generation_mw?.toLocaleString()} MW`
                       : 'N/A'}
                   </strong>
                 </div>
-                <div className="px-2.5 py-1 rounded bg-slate-900 border border-slate-800">
-                  <span className="text-slate-400">Selected Benchmark: </span>
-                  <strong className="text-sky-300 tabular-nums">
+                <div className="px-2.5 py-1 rounded-md bg-nature-bg border border-nature-border">
+                  <span className="text-nature-muted">Selected Benchmark: </span>
+                  <strong className="text-nature-forecast tabular-nums">
                     {historyData?.selected_forecast_generation_mw !== null
                       ? `${historyData?.selected_forecast_generation_mw?.toLocaleString()} MW`
                       : 'N/A'}
@@ -231,8 +233,8 @@ export const ForecastAnalysisPage: React.FC = () => {
 
                 {/* Detailed Publications Audit Table */}
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between text-xs text-slate-400 font-sans">
-                    <span className="font-medium text-slate-300">
+                  <div className="flex items-center justify-between text-xs text-nature-muted font-sans">
+                    <span className="font-medium text-nature-text">
                       All Registered WINDFOR Publications for this Settlement Period ({historyData.total_publications} Submissions)
                     </span>
                     <span className="font-mono text-[11px]">
@@ -240,53 +242,53 @@ export const ForecastAnalysisPage: React.FC = () => {
                     </span>
                   </div>
 
-                  <div className="overflow-x-auto rounded border border-slate-800 bg-slate-900/60">
+                  <div className="overflow-x-auto rounded-lg border border-nature-border bg-white">
                     <table className="w-full text-left text-xs font-mono">
-                      <thead className="bg-[#0a0f1d] text-slate-400 border-b border-slate-800">
+                      <thead className="bg-nature-bg text-nature-muted border-b border-nature-border">
                         <tr>
-                          <th className="py-2 px-3 font-medium text-[11px]">Publication Time (London)</th>
-                          <th className="py-2 px-3 font-medium text-[11px]">Publication Time (UTC)</th>
-                          <th className="py-2 px-3 font-medium text-[11px] text-right">Forecast (MW)</th>
-                          <th className="py-2 px-3 font-medium text-[11px] text-right">Lead Time</th>
-                          <th className="py-2 px-3 font-medium text-[11px] text-center">Cutoff Status</th>
-                          <th className="py-2 px-3 font-medium text-[11px] text-center">Selected</th>
+                          <th className="py-2.5 px-3 font-medium text-[11px]">Publication Time (London)</th>
+                          <th className="py-2.5 px-3 font-medium text-[11px]">Publication Time (UTC)</th>
+                          <th className="py-2.5 px-3 font-medium text-[11px] text-right">Forecast (MW)</th>
+                          <th className="py-2.5 px-3 font-medium text-[11px] text-right">Lead Time</th>
+                          <th className="py-2.5 px-3 font-medium text-[11px] text-center">Cutoff Status</th>
+                          <th className="py-2.5 px-3 font-medium text-[11px] text-center">Selected</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-800/80">
+                      <tbody className="divide-y divide-nature-border">
                         {historyData.forecast_publications.map((pub, idx) => (
                           <tr
                             key={idx}
                             className={`transition-colors ${
                               pub.is_selected
-                                ? 'bg-sky-950/40 font-medium'
+                                ? 'bg-nature-forest-light/60 font-medium'
                                 : pub.is_eligible_under_cutoff
-                                ? 'hover:bg-slate-850/50'
+                                ? 'hover:bg-nature-bg/50'
                                 : 'opacity-40 hover:opacity-75'
                             }`}
                           >
-                            <td className="py-2 px-3 text-slate-300">{pub.publish_time_local}</td>
-                            <td className="py-2 px-3 text-slate-500">{pub.publish_time}</td>
-                            <td className="py-2 px-3 text-right font-bold text-sky-400 tabular-nums">
+                            <td className="py-2 px-3 text-nature-text">{pub.publish_time_local}</td>
+                            <td className="py-2 px-3 text-nature-muted text-[11px]">{pub.publish_time}</td>
+                            <td className="py-2 px-3 text-right font-bold text-nature-forecast tabular-nums">
                               {pub.forecast_generation_mw.toLocaleString()} MW
                             </td>
-                            <td className="py-2 px-3 text-right text-slate-400 tabular-nums">
+                            <td className="py-2 px-3 text-right text-nature-muted tabular-nums">
                               {pub.lead_time_hours}h
                             </td>
                             <td className="py-2 px-3 text-center">
                               {pub.is_eligible_under_cutoff ? (
-                                <span className="inline-flex items-center text-emerald-400 text-[11px]">
+                                <span className="inline-flex items-center text-nature-actual text-[11px]">
                                   <CheckCircle2 className="w-3 h-3 mr-1" /> Eligible
                                 </span>
                               ) : (
-                                <span className="inline-flex items-center text-slate-500 text-[11px]">
+                                <span className="inline-flex items-center text-nature-muted text-[11px]">
                                   <XCircle className="w-3 h-3 mr-1" /> After Cutoff
                                 </span>
                               )}
                             </td>
                             <td className="py-2 px-3 text-center">
                               {pub.is_selected && (
-                                <span className="inline-flex items-center text-sky-300 bg-sky-950 px-2 py-0.5 rounded border border-sky-800 text-[10px] font-bold">
-                                  <Star className="w-2.5 h-2.5 mr-1 fill-sky-300" /> SELECTED
+                                <span className="inline-flex items-center text-nature-forest bg-nature-forest-light px-2 py-0.5 rounded-md border border-nature-forest/40 text-[10px] font-bold">
+                                  <Star className="w-2.5 h-2.5 mr-1 fill-nature-forest" /> SELECTED
                                 </span>
                               )}
                             </td>

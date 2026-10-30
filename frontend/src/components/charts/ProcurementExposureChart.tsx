@@ -32,21 +32,21 @@ export const ProcurementExposureChart: React.FC<ProcurementExposureChartProps> =
       category: 'Overforecast (Short)',
       mwh: exposure.overforecast_energy_mwh,
       displayMwh: `+${exposure.overforecast_energy_mwh.toLocaleString()} MWh`,
-      color: '#f59e0b',
+      color: '#D49A42', // warm amber
       imbalance: 'Short Risk (System Buy Price purchases)',
     },
     {
       category: 'Underforecast (Long)',
       mwh: -exposure.underforecast_energy_mwh,
       displayMwh: `-${exposure.underforecast_energy_mwh.toLocaleString()} MWh`,
-      color: '#38bdf8',
+      color: '#5689B5', // muted sky
       imbalance: 'Long Risk (System Sell Price spill)',
     },
     {
       category: 'Net Day Imbalance',
       mwh: exposure.net_energy_variance_mwh,
       displayMwh: `${exposure.net_energy_variance_mwh > 0 ? '+' : ''}${exposure.net_energy_variance_mwh.toLocaleString()} MWh`,
-      color: exposure.net_energy_variance_mwh >= 0 ? '#f97316' : '#0284c7',
+      color: exposure.net_energy_variance_mwh > 0 ? '#D49A42' : exposure.net_energy_variance_mwh < 0 ? '#5689B5' : '#245B45',
       imbalance:
         exposure.net_energy_variance_mwh > 0
           ? 'Net Short Exposure'
@@ -70,23 +70,23 @@ export const ProcurementExposureChart: React.FC<ProcurementExposureChartProps> =
   });
 
   return (
-    <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-3.5 space-y-3">
+    <div className="rounded-lg border border-nature-border bg-nature-bg p-3.5 space-y-3">
       {/* View Toggle */}
-      <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-        <span className="text-xs font-medium text-slate-300">
+      <div className="flex items-center justify-between pb-2 border-b border-nature-border">
+        <span className="text-xs font-medium text-nature-text">
           {viewMode === 'balance'
             ? 'Energy Imbalance Volume Categories'
             : '48 Settlement Period Cumulative Imbalance Trajectory'}
         </span>
 
         {generationPoints && generationPoints.length > 0 && (
-          <div className="flex items-center space-x-1 bg-slate-900 p-0.5 rounded border border-slate-800 font-mono text-xs">
+          <div className="flex items-center space-x-1 bg-white p-0.5 rounded-md border border-nature-border font-mono text-xs shadow-sm">
             <button
               onClick={() => setViewMode('balance')}
               className={`px-2 py-0.5 rounded text-[11px] transition-colors ${
                 viewMode === 'balance'
-                  ? 'bg-slate-800 text-slate-100 font-semibold'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-nature-forest text-white font-medium'
+                  : 'text-nature-muted hover:text-nature-text'
               }`}
             >
               Categories
@@ -95,8 +95,8 @@ export const ProcurementExposureChart: React.FC<ProcurementExposureChartProps> =
               onClick={() => setViewMode('cumulative')}
               className={`px-2 py-0.5 rounded text-[11px] transition-colors ${
                 viewMode === 'cumulative'
-                  ? 'bg-slate-800 text-slate-100 font-semibold'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-nature-forest text-white font-medium'
+                  : 'text-nature-muted hover:text-nature-text'
               }`}
             >
               Trajectory
@@ -110,17 +110,17 @@ export const ProcurementExposureChart: React.FC<ProcurementExposureChartProps> =
         {viewMode === 'balance' ? (
           <ResponsiveContainer width="100%" height="100%" minWidth={100} minHeight={100}>
             <BarChart data={barData} margin={{ top: 10, right: 20, left: 20, bottom: 10 }}>
-              <CartesianGrid strokeDasharray="2 2" stroke="#1e293b" vertical={false} />
+              <CartesianGrid strokeDasharray="2 2" stroke="#E1E8DF" vertical={false} />
               <XAxis
                 dataKey="category"
-                stroke="#64748b"
-                tick={{ fill: '#94a3b8', fontSize: 11 }}
-                tickLine={{ stroke: '#334155' }}
+                stroke="#748078"
+                tick={{ fill: '#748078', fontSize: 11 }}
+                tickLine={{ stroke: '#E1E8DF' }}
               />
               <YAxis
-                stroke="#64748b"
-                tick={{ fill: '#94a3b8', fontSize: 10, fontFamily: 'monospace' }}
-                tickLine={{ stroke: '#334155' }}
+                stroke="#748078"
+                tick={{ fill: '#748078', fontSize: 10, fontFamily: 'monospace' }}
+                tickLine={{ stroke: '#E1E8DF' }}
                 tickFormatter={(v) => `${v.toLocaleString()} MWh`}
               />
               <Tooltip
@@ -128,17 +128,17 @@ export const ProcurementExposureChart: React.FC<ProcurementExposureChartProps> =
                   if (active && payload && payload.length) {
                     const d = payload[0].payload;
                     return (
-                      <div className="rounded border border-slate-700 bg-[#0c1322] p-2.5 shadow-xl text-xs font-mono space-y-1">
-                        <div className="font-semibold text-slate-200 font-sans">{d.category}</div>
-                        <div className="text-sm font-bold text-slate-100">{d.displayMwh}</div>
-                        <div className="text-[11px] text-slate-400">{d.imbalance}</div>
+                      <div className="rounded-md border border-nature-border bg-white p-2.5 shadow-lg text-xs font-mono space-y-1">
+                        <div className="font-semibold text-nature-text font-sans">{d.category}</div>
+                        <div className="text-sm font-bold text-nature-text tabular-nums">{d.displayMwh}</div>
+                        <div className="text-[11px] text-nature-muted">{d.imbalance}</div>
                       </div>
                     );
                   }
                   return null;
                 }}
               />
-              <ReferenceLine y={0} stroke="#475569" strokeWidth={1} />
+              <ReferenceLine y={0} stroke="#8FAE91" strokeWidth={1} />
               <Bar dataKey="mwh" barSize={36} isAnimationActive={false}>
                 {barData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
@@ -149,18 +149,18 @@ export const ProcurementExposureChart: React.FC<ProcurementExposureChartProps> =
         ) : (
           <ResponsiveContainer width="100%" height="100%" minWidth={100} minHeight={100}>
             <AreaChart data={cumulativeData} margin={{ top: 10, right: 15, left: 15, bottom: 20 }}>
-              <CartesianGrid strokeDasharray="2 2" stroke="#1e293b" vertical={false} />
+              <CartesianGrid strokeDasharray="2 2" stroke="#E1E8DF" vertical={false} />
               <XAxis
                 dataKey="timeLabel"
-                stroke="#64748b"
-                tick={{ fill: '#94a3b8', fontSize: 10, fontFamily: 'monospace' }}
+                stroke="#748078"
+                tick={{ fill: '#748078', fontSize: 10, fontFamily: 'monospace' }}
                 interval={3}
-                tickLine={{ stroke: '#334155' }}
+                tickLine={{ stroke: '#E1E8DF' }}
               />
               <YAxis
-                stroke="#64748b"
-                tick={{ fill: '#94a3b8', fontSize: 10, fontFamily: 'monospace' }}
-                tickLine={{ stroke: '#334155' }}
+                stroke="#748078"
+                tick={{ fill: '#748078', fontSize: 10, fontFamily: 'monospace' }}
+                tickLine={{ stroke: '#E1E8DF' }}
                 tickFormatter={(v) => `${v > 0 ? '+' : ''}${v} MWh`}
               />
               <Tooltip
@@ -168,15 +168,15 @@ export const ProcurementExposureChart: React.FC<ProcurementExposureChartProps> =
                   if (active && payload && payload.length) {
                     const d = payload[0].payload;
                     return (
-                      <div className="rounded border border-slate-700 bg-[#0c1322] p-2.5 shadow-xl text-xs font-mono space-y-1">
-                        <div className="font-semibold text-slate-200 font-sans">
+                      <div className="rounded-md border border-nature-border bg-white p-2.5 shadow-lg text-xs font-mono space-y-1">
+                        <div className="font-semibold text-nature-text font-sans">
                           SP {d.settlement_period} &bull; {d.timeLabel}
                         </div>
-                        <div className="text-slate-300">
-                          Period Imbalance: <span className="font-bold">{d.intervalMwh} MWh</span>
+                        <div className="text-nature-muted">
+                          Period Imbalance: <span className="font-bold text-nature-text tabular-nums">{d.intervalMwh} MWh</span>
                         </div>
-                        <div className="text-sky-400 border-t border-slate-800 pt-1">
-                          Cumulative Imbalance: <span className="font-bold">{d.cumulativeMwh} MWh</span>
+                        <div className="text-nature-forecast border-t border-nature-border pt-1">
+                          Cumulative Imbalance: <span className="font-bold tabular-nums">{d.cumulativeMwh} MWh</span>
                         </div>
                       </div>
                     );
@@ -184,14 +184,14 @@ export const ProcurementExposureChart: React.FC<ProcurementExposureChartProps> =
                   return null;
                 }}
               />
-              <ReferenceLine y={0} stroke="#475569" strokeWidth={1} />
+              <ReferenceLine y={0} stroke="#8FAE91" strokeWidth={1} />
               <Area
                 type="monotone"
                 dataKey="cumulativeMwh"
-                stroke="#38bdf8"
+                stroke="#5689B5"
                 strokeWidth={2}
-                fill="#38bdf8"
-                fillOpacity={0.1}
+                fill="#5689B5"
+                fillOpacity={0.12}
                 isAnimationActive={false}
               />
             </AreaChart>

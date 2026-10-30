@@ -43,8 +43,8 @@ export function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#080d1a] text-slate-100 flex flex-col font-sans selection:bg-sky-500/30 selection:text-white">
-      {/* Financial Terminal Shell */}
+    <div className="min-h-screen bg-nature-bg text-nature-text flex flex-col font-sans selection:bg-nature-forest/15 selection:text-nature-forest">
+      {/* Platform Shell */}
       <div className="flex flex-1">
         {/* Left Navigation Sidebar */}
         <Sidebar
@@ -84,18 +84,18 @@ export function App() {
             {activeTab === 'methodology' && <MethodologyPage />}
           </main>
 
-          {/* Clean Institutional Footer */}
-          <footer className="border-t border-slate-800/80 bg-[#0a0f1d] py-4 text-xs text-slate-400 mt-auto">
+          {/* Clean Natural Footer */}
+          <footer className="border-t border-nature-border bg-white py-4 text-xs text-nature-muted mt-auto">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="flex flex-wrap items-center space-x-2 text-[11px]">
-                <span className="font-semibold text-slate-300">WindScope UK</span>
-                <span className="text-slate-600">&bull;</span>
-                <span>Day-Ahead Procurement Analytics</span>
-                <span className="text-slate-600">&bull;</span>
-                <span className="font-mono text-slate-400">January 2026 Evaluation</span>
+                <span className="font-semibold text-nature-text">WindScope UK</span>
+                <span className="text-nature-border">&bull;</span>
+                <span>Renewable Energy Forecasting &amp; Day-Ahead Analytics</span>
+                <span className="text-nature-border">&bull;</span>
+                <span className="font-mono text-nature-muted">January 2026 Evaluation</span>
               </div>
 
-              <div className="text-[11px] text-slate-400 font-mono text-center sm:text-right">
+              <div className="text-[11px] text-nature-muted font-mono text-center sm:text-right">
                 Elexon BMRS Datasets: FUELHH &amp; WINDFOR &bull; Europe/London (GMT)
               </div>
             </div>
@@ -103,7 +103,7 @@ export function App() {
         </div>
       </div>
 
-      {/* System Telemetry & Pipeline Details Modal */}
+      {/* System Telemetry Modal */}
       <SystemStatusModal
         isOpen={isStatusModalOpen}
         onClose={() => setIsStatusModalOpen(false)}

@@ -49,9 +49,9 @@ export const CutoffSelector: React.FC<CutoffSelectorProps> = ({
   const currentOption = CUTOFF_OPTIONS.find((c) => c.id === selectedCutoff) || CUTOFF_OPTIONS[0];
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 bg-[#0e1526] p-2.5 rounded-lg border border-slate-800">
-      <div className="flex items-center space-x-1.5 text-xs font-medium text-slate-300">
-        <Clock className="w-3.5 h-3.5 text-sky-400" />
+    <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 bg-white p-2.5 rounded-lg border border-nature-border shadow-sm">
+      <div className="flex items-center space-x-1.5 text-xs font-medium text-nature-text">
+        <Clock className="w-3.5 h-3.5 text-nature-forest" />
         <span>Decision Cutoff:</span>
       </div>
 
@@ -63,10 +63,10 @@ export const CutoffSelector: React.FC<CutoffSelectorProps> = ({
               key={opt.id}
               disabled={disabled}
               onClick={() => onChange(opt.id)}
-              className={`px-2.5 py-1 text-xs font-medium rounded transition-colors ${
+              className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors ${
                 isSelected
-                  ? 'bg-sky-900/70 text-sky-200 border border-sky-600 font-semibold'
-                  : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-slate-200 border border-slate-700/60'
+                  ? 'bg-nature-forest text-white font-semibold shadow-sm'
+                  : 'bg-nature-bg text-nature-muted hover:text-nature-text hover:bg-[#EAEFE9] border border-nature-border'
               } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
               title={opt.label}
             >
@@ -76,7 +76,7 @@ export const CutoffSelector: React.FC<CutoffSelectorProps> = ({
         })}
       </div>
 
-      <div className="hidden lg:block text-[11px] text-slate-400 font-mono px-2 py-0.5 rounded bg-slate-900 border border-slate-800">
+      <div className="hidden lg:block text-[11px] text-nature-muted font-mono px-2 py-0.5 rounded-md bg-nature-bg border border-nature-border">
         {currentOption.badge}
       </div>
     </div>

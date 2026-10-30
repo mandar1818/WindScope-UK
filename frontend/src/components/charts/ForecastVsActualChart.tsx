@@ -39,15 +39,15 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload }) => {
         : null;
 
     return (
-      <div className="rounded border border-slate-700 bg-[#0c1322]/95 p-3 shadow-xl text-xs space-y-1.5 backdrop-blur font-mono z-50 min-w-[220px]">
+      <div className="rounded-md border border-nature-border bg-white p-3 shadow-lg text-xs space-y-1.5 font-mono z-50 min-w-[220px]">
         {/* Settlement Period & Time Header */}
-        <div className="font-semibold text-slate-200 border-b border-slate-800 pb-1 flex items-center justify-between font-sans">
+        <div className="font-semibold text-nature-text border-b border-nature-border pb-1 flex items-center justify-between font-sans">
           <span>SP {pt.settlement_period} &bull; {pt.start_time_local.split(' ')[1] || pt.start_time_local}</span>
           <span
-            className={`text-[9px] px-1.5 py-0.2 rounded font-mono ${
+            className={`text-[10px] px-1.5 py-0.2 rounded font-mono ${
               pt.is_valid_pair
-                ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-800/80'
-                : 'bg-amber-950/80 text-amber-400 border border-amber-800/80'
+                ? 'bg-nature-forest-light text-nature-forest border border-nature-forest/30'
+                : 'bg-nature-risk-light text-nature-risk border border-nature-risk/40'
             }`}
           >
             {pt.status}
@@ -56,38 +56,38 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload }) => {
 
         {/* Actual Outturn */}
         <div className="flex justify-between items-center space-x-3">
-          <span className="text-slate-400 flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-400" /> Actual (FUELHH):
+          <span className="text-nature-muted flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-nature-actual" /> Actual (FUELHH):
           </span>
-          <span className="font-bold text-emerald-400">
+          <span className="font-bold text-nature-actual tabular-nums">
             {act !== null && act !== undefined ? `${act.toLocaleString()} MW` : 'Missing'}
           </span>
         </div>
 
         {/* Selected Forecast */}
         <div className="flex justify-between items-center space-x-3">
-          <span className="text-slate-400 flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-sky-400" /> Forecast (WINDFOR):
+          <span className="text-nature-muted flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-nature-forecast" /> Forecast (WINDFOR):
           </span>
-          <span className="font-bold text-sky-400">
+          <span className="font-bold text-nature-forecast tabular-nums">
             {fc !== null && fc !== undefined ? `${fc.toLocaleString()} MW` : 'Missing'}
           </span>
         </div>
 
         {/* Error / Variance */}
         {err !== null && err !== undefined && (
-          <div className="flex justify-between items-center space-x-3 pt-1 border-t border-slate-800">
-            <span className="text-slate-400 font-sans">Deviation:</span>
+          <div className="flex justify-between items-center space-x-3 pt-1 border-t border-nature-border">
+            <span className="text-nature-muted font-sans">Deviation:</span>
             <div className="text-right">
               <span
-                className={`font-bold ${
-                  err > 0 ? 'text-amber-400' : err < 0 ? 'text-sky-300' : 'text-slate-300'
+                className={`font-bold tabular-nums ${
+                  err > 0 ? 'text-nature-risk' : err < 0 ? 'text-nature-forecast' : 'text-nature-text'
                 }`}
               >
                 {err > 0 ? `+${err.toLocaleString()}` : err.toLocaleString()} MW
               </span>
               {percentErr && (
-                <span className="text-[10px] text-slate-500 ml-1">
+                <span className="text-[10px] text-nature-muted ml-1">
                   ({err > 0 ? '+' : ''}{percentErr}%)
                 </span>
               )}
@@ -96,9 +96,9 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload }) => {
         )}
 
         {pt.forecast_publish_time_local && (
-          <div className="text-[10px] text-slate-400 pt-1 border-t border-slate-800/80 font-sans flex justify-between">
-            <span>Forecast Pub:</span>
-            <span className="font-mono text-slate-300">
+          <div className="text-[10px] text-nature-muted pt-1 border-t border-nature-border font-sans flex justify-between">
+            <span>Published:</span>
+            <span className="font-mono text-nature-text">
               {pt.forecast_publish_time_local.split(' ')[1] || pt.forecast_publish_time_local}
             </span>
           </div>
@@ -120,7 +120,7 @@ export const ForecastVsActualChart: React.FC<ForecastVsActualChartProps> = ({
   if (!data || data.length === 0) {
     return (
       <div
-        className="rounded-lg border border-slate-800 bg-[#0e1526] p-8 flex items-center justify-center text-slate-500 font-mono text-xs"
+        className="rounded-lg border border-nature-border bg-white p-8 flex items-center justify-center text-nature-muted font-mono text-xs shadow-sm"
         style={{ height }}
       >
         No generation data available for the selected parameters.
@@ -146,63 +146,63 @@ export const ForecastVsActualChart: React.FC<ForecastVsActualChartProps> = ({
   );
 
   return (
-    <div className="rounded-lg border border-slate-800/90 bg-[#0e1526] p-4 space-y-3">
+    <div className="rounded-lg border border-nature-border bg-white p-4 space-y-3 shadow-sm">
       {/* Chart Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-2.5 border-b border-slate-800 gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-2.5 border-b border-nature-border gap-2">
         <div>
-          <h3 className="text-sm font-semibold text-slate-100">{title}</h3>
-          <p className="text-xs text-slate-400 mt-0.5">{subtitle}</p>
+          <h3 className="text-sm font-semibold text-nature-text">{title}</h3>
+          <p className="text-xs text-nature-muted mt-0.5">{subtitle}</p>
         </div>
 
         {/* Legend & Display Toggle */}
         <div className="flex items-center space-x-3 text-xs font-mono">
-          <div className="flex items-center space-x-3 bg-slate-900 px-2.5 py-1 rounded border border-slate-800">
+          <div className="flex items-center space-x-3 bg-nature-bg px-2.5 py-1 rounded-md border border-nature-border">
             <span className="flex items-center space-x-1.5">
-              <span className="w-2.5 h-2.5 rounded-sm bg-emerald-400 inline-block" />
-              <span className="text-slate-300">Actual (FUELHH)</span>
+              <span className="w-2.5 h-2.5 rounded-sm bg-nature-actual inline-block" />
+              <span className="text-nature-text text-[11px] font-sans">Actual Outturn</span>
             </span>
             <span className="flex items-center space-x-1.5">
-              <span className="w-2.5 h-1 bg-sky-400 inline-block rounded-full" />
-              <span className="text-slate-300">Forecast (WINDFOR)</span>
+              <span className="w-2.5 h-1 bg-nature-forecast inline-block rounded-full" />
+              <span className="text-nature-text text-[11px] font-sans">Forecast</span>
             </span>
           </div>
 
           <button
             onClick={() => setShowDifferenceBar(!showDifferenceBar)}
-            className={`px-2 py-1 rounded border text-[11px] font-sans flex items-center gap-1 transition-colors ${
+            className={`px-2.5 py-1 rounded-md border text-[11px] font-sans flex items-center gap-1 transition-colors ${
               showDifferenceBar
-                ? 'bg-sky-900/60 text-sky-200 border-sky-700 font-medium'
-                : 'bg-slate-900 text-slate-400 hover:text-slate-200 border-slate-800'
+                ? 'bg-nature-forest-light text-nature-forest border-nature-forest/40 font-medium'
+                : 'bg-nature-bg text-nature-muted hover:text-nature-text border border-nature-border'
             }`}
             title="Toggle error bars overlay"
           >
-            <BarChart2 className="w-3 h-3" />
+            <BarChart2 className="w-3.5 h-3.5" />
             <span>Delta Overlay</span>
           </button>
         </div>
       </div>
 
       {/* Summary Telemetry Strip */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono bg-slate-900/60 p-2 rounded border border-slate-800/80">
-        <div className="flex justify-between items-center pr-2 border-r border-slate-800">
-          <span className="text-slate-400">Peak Outturn:</span>
-          <span className="font-semibold text-emerald-400 tabular-nums">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono bg-nature-bg p-2 rounded-md border border-nature-border">
+        <div className="flex justify-between items-center pr-2 border-r border-nature-border">
+          <span className="text-nature-muted">Peak Actual:</span>
+          <span className="font-semibold text-nature-actual tabular-nums">
             {peakActual.val ? `${peakActual.val.toLocaleString()} MW (SP${peakActual.sp})` : 'N/A'}
           </span>
         </div>
-        <div className="flex justify-between items-center px-2 border-r border-slate-800">
-          <span className="text-slate-400">Peak Forecast:</span>
-          <span className="font-semibold text-sky-400 tabular-nums">
+        <div className="flex justify-between items-center px-2 border-r border-nature-border">
+          <span className="text-nature-muted">Peak Forecast:</span>
+          <span className="font-semibold text-nature-forecast tabular-nums">
             {peakForecast.val ? `${peakForecast.val.toLocaleString()} MW (SP${peakForecast.sp})` : 'N/A'}
           </span>
         </div>
-        <div className="flex justify-between items-center px-2 border-r border-slate-800">
-          <span className="text-slate-400">Periods:</span>
-          <span className="font-semibold text-slate-200 tabular-nums">{validPoints.length} / 48</span>
+        <div className="flex justify-between items-center px-2 border-r border-nature-border">
+          <span className="text-nature-muted">Periods:</span>
+          <span className="font-semibold text-nature-text tabular-nums">{validPoints.length} / 48</span>
         </div>
         <div className="flex justify-between items-center pl-2">
-          <span className="text-slate-400">Interval:</span>
-          <span className="font-semibold text-slate-300">30 min</span>
+          <span className="text-nature-muted">Resolution:</span>
+          <span className="font-semibold text-nature-text">30 min</span>
         </div>
       </div>
 
@@ -211,29 +211,29 @@ export const ForecastVsActualChart: React.FC<ForecastVsActualChartProps> = ({
         <ResponsiveContainer width="100%" height="100%" minWidth={100} minHeight={100}>
           <ComposedChart data={formattedData} margin={{ top: 10, right: 15, left: 10, bottom: 20 }}>
             <defs>
-              <linearGradient id="actualFillGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#10b981" stopOpacity={0.15} />
-                <stop offset="95%" stopColor="#10b981" stopOpacity={0.0} />
+              <linearGradient id="naturalActualGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#26966B" stopOpacity={0.15} />
+                <stop offset="95%" stopColor="#26966B" stopOpacity={0.0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="2 2" stroke="#1e293b" vertical={false} />
+            <CartesianGrid strokeDasharray="2 2" stroke="#E1E8DF" vertical={false} />
             <XAxis
               dataKey="timeLabel"
-              stroke="#64748b"
-              tick={{ fill: '#94a3b8', fontSize: 10, fontFamily: 'monospace' }}
+              stroke="#748078"
+              tick={{ fill: '#748078', fontSize: 10, fontFamily: 'monospace' }}
               interval={3}
-              tickLine={{ stroke: '#334155' }}
+              tickLine={{ stroke: '#E1E8DF' }}
             />
             <YAxis
-              stroke="#64748b"
-              tick={{ fill: '#94a3b8', fontSize: 10, fontFamily: 'monospace' }}
-              tickLine={{ stroke: '#334155' }}
+              stroke="#748078"
+              tick={{ fill: '#748078', fontSize: 10, fontFamily: 'monospace' }}
+              tickLine={{ stroke: '#E1E8DF' }}
               tickFormatter={(v) => `${(v / 1000).toFixed(1)}k`}
               label={{
                 value: 'Generation (MW)',
                 angle: -90,
                 position: 'insideLeft',
-                fill: '#64748b',
+                fill: '#748078',
                 fontSize: 10,
                 offset: 5,
               }}
@@ -245,10 +245,10 @@ export const ForecastVsActualChart: React.FC<ForecastVsActualChartProps> = ({
               type="monotone"
               dataKey="actual_generation_mw"
               name="Actual Outturn (FUELHH)"
-              stroke="#10b981"
+              stroke="#26966B"
               strokeWidth={2}
               fillOpacity={1}
-              fill="url(#actualFillGrad)"
+              fill="url(#naturalActualGrad)"
               isAnimationActive={false}
             />
 
@@ -257,7 +257,7 @@ export const ForecastVsActualChart: React.FC<ForecastVsActualChartProps> = ({
               type="monotone"
               dataKey="forecast_generation_mw"
               name="Forecast (WINDFOR)"
-              stroke="#38bdf8"
+              stroke="#5689B5"
               strokeWidth={2}
               strokeDasharray="4 4"
               dot={false}
@@ -269,8 +269,8 @@ export const ForecastVsActualChart: React.FC<ForecastVsActualChartProps> = ({
               <Bar
                 dataKey="positiveDelta"
                 name="Overforecast (MW)"
-                fill="#f59e0b"
-                opacity={0.6}
+                fill="#D49A42"
+                opacity={0.65}
                 barSize={6}
                 isAnimationActive={false}
               />
@@ -279,8 +279,8 @@ export const ForecastVsActualChart: React.FC<ForecastVsActualChartProps> = ({
               <Bar
                 dataKey="negativeDelta"
                 name="Underforecast (MW)"
-                fill="#38bdf8"
-                opacity={0.6}
+                fill="#5689B5"
+                opacity={0.65}
                 barSize={6}
                 isAnimationActive={false}
               />

@@ -9,7 +9,7 @@ import { ForecastErrorChart } from '../components/charts/ForecastErrorChart';
 import { ProcurementExposureWidget } from '../components/exposure/ProcurementExposureWidget';
 import { ErrorAlert } from '../components/common/ErrorAlert';
 import { CardSkeleton, ChartSkeleton } from '../components/common/Skeleton';
-import { Database, Info } from 'lucide-react';
+import { Database } from 'lucide-react';
 
 interface OverviewPageProps {
   initialDate?: string;
@@ -49,20 +49,20 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
   return (
     <div className="space-y-4">
       {/* Operational Control Toolbar */}
-      <div className="rounded-lg border border-slate-800 bg-[#0e1526] p-3.5 space-y-3">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-2.5 border-b border-slate-800 gap-2">
+      <div className="rounded-lg border border-nature-border bg-white p-3.5 space-y-3 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-2.5 border-b border-nature-border gap-2">
           <div>
-            <h2 className="text-base font-semibold text-slate-100">
+            <h2 className="text-base font-semibold text-nature-text">
               National Wind Power Forecasting &amp; Day-Ahead Balancing Analytics
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-nature-muted mt-0.5">
               Evaluating national metered wind generation against point-in-time Day-Ahead forecasts for GB settlement periods
             </p>
           </div>
 
           <div className="flex items-center space-x-2 text-xs font-mono">
-            <span className="px-2.5 py-1 rounded bg-slate-900 border border-slate-800 text-slate-300">
-              Date: <strong className="text-slate-100">{selectedDate}</strong>
+            <span className="px-2.5 py-1 rounded-md bg-nature-bg border border-nature-border text-nature-text font-medium">
+              Date: <strong className="text-nature-forest">{selectedDate}</strong>
             </span>
           </div>
         </div>
@@ -185,36 +185,36 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
 
           {/* Secondary Telemetry Strip */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs font-mono">
-            <div className="p-2.5 rounded bg-[#0e1526] border border-slate-800 text-slate-300 flex justify-between items-center">
-              <span className="text-slate-400">Mean Actual:</span>
-              <strong className="text-emerald-400 tabular-nums">
+            <div className="p-2.5 rounded-lg bg-white border border-nature-border text-nature-text flex justify-between items-center shadow-sm">
+              <span className="text-nature-muted">Mean Actual:</span>
+              <strong className="text-nature-actual tabular-nums">
                 {data.date_metrics.mean_actual_mw?.toLocaleString() ?? 'N/A'} MW
               </strong>
             </div>
-            <div className="p-2.5 rounded bg-[#0e1526] border border-slate-800 text-slate-300 flex justify-between items-center">
-              <span className="text-slate-400">Mean Forecast:</span>
-              <strong className="text-sky-400 tabular-nums">
+            <div className="p-2.5 rounded-lg bg-white border border-nature-border text-nature-text flex justify-between items-center shadow-sm">
+              <span className="text-nature-muted">Mean Forecast:</span>
+              <strong className="text-nature-forecast tabular-nums">
                 {data.date_metrics.mean_forecast_mw?.toLocaleString() ?? 'N/A'} MW
               </strong>
             </div>
-            <div className="p-2.5 rounded bg-[#0e1526] border border-slate-800 text-slate-300 flex justify-between items-center">
-              <span className="text-slate-400">Net Energy Variance:</span>
+            <div className="p-2.5 rounded-lg bg-white border border-nature-border text-nature-text flex justify-between items-center shadow-sm">
+              <span className="text-nature-muted">Net Energy Variance:</span>
               <strong
                 className={`tabular-nums ${
                   data.exposure_summary.net_energy_variance_mwh > 0
-                    ? 'text-amber-400'
+                    ? 'text-nature-risk'
                     : data.exposure_summary.net_energy_variance_mwh < 0
-                    ? 'text-sky-400'
-                    : 'text-slate-200'
+                    ? 'text-nature-forecast'
+                    : 'text-nature-text'
                 }`}
               >
                 {data.exposure_summary.net_energy_variance_mwh > 0 ? '+' : ''}
                 {data.exposure_summary.net_energy_variance_mwh.toLocaleString()} MWh
               </strong>
             </div>
-            <div className="p-2.5 rounded bg-[#0e1526] border border-slate-800 text-slate-300 flex justify-between items-center">
-              <span className="text-slate-400">Dominant Exposure:</span>
-              <strong className="text-slate-100 font-sans">
+            <div className="p-2.5 rounded-lg bg-white border border-nature-border text-nature-text flex justify-between items-center shadow-sm">
+              <span className="text-nature-muted">Dominant Exposure:</span>
+              <strong className="text-nature-text font-sans">
                 {data.exposure_summary.dominant_risk_category === 'NET_SHORT_EXPOSURE'
                   ? 'Net Short (Buy)'
                   : data.exposure_summary.dominant_risk_category === 'NET_LONG_EXPOSURE'
@@ -245,19 +245,19 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
           />
 
           {/* Data Freshness & Source Status Footer Card */}
-          <div className="rounded border border-slate-800 bg-[#0a0f1d] p-3 text-xs font-mono text-slate-400 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+          <div className="rounded-lg border border-nature-border bg-white p-3 text-xs font-mono text-nature-muted flex flex-col md:flex-row md:items-center md:justify-between gap-2 shadow-sm">
             <div className="flex items-center space-x-2">
-              <Database className="w-3.5 h-3.5 text-slate-400" />
+              <Database className="w-3.5 h-3.5 text-nature-forest" />
               <span>
-                Data Sources: <strong className="text-slate-300">FUELHH &amp; WINDFOR</strong> ({data.source_status.data_source_description})
+                Data Sources: <strong className="text-nature-text font-sans">FUELHH &amp; WINDFOR</strong> ({data.source_status.data_source_description})
               </span>
             </div>
             <div className="flex items-center space-x-4">
               <span>
-                Resolution: <strong className="text-slate-300">30 min (48 SPs)</strong>
+                Resolution: <strong className="text-nature-text font-sans">30 min (48 SPs)</strong>
               </span>
               <span>
-                Window: <strong className="text-slate-300">{data.evaluation_window}</strong>
+                Window: <strong className="text-nature-text font-sans">{data.evaluation_window}</strong>
               </span>
             </div>
           </div>

@@ -102,12 +102,12 @@ export const DataTable: React.FC<DataTableProps> = ({
   };
 
   return (
-    <div className="rounded-lg border border-slate-800 bg-[#0e1526] overflow-hidden space-y-0">
+    <div className="rounded-lg border border-nature-border bg-white overflow-hidden space-y-0 shadow-sm">
       {/* Table Toolbar */}
-      <div className="p-3.5 border-b border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-2.5 bg-slate-900/60">
+      <div className="p-3.5 border-b border-nature-border flex flex-col md:flex-row md:items-center justify-between gap-2.5 bg-nature-bg">
         <div>
-          <h3 className="text-sm font-semibold text-slate-100">{title}</h3>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <h3 className="text-sm font-semibold text-nature-text">{title}</h3>
+          <p className="text-xs text-nature-muted mt-0.5">
             Matched FUELHH metered outturn and WINDFOR point-in-time submissions
           </p>
         </div>
@@ -115,7 +115,7 @@ export const DataTable: React.FC<DataTableProps> = ({
         <div className="flex flex-wrap items-center gap-2">
           {/* Search Box */}
           <div className="relative">
-            <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-400" />
+            <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-nature-muted" />
             <input
               type="text"
               placeholder="Search SP, time..."
@@ -124,12 +124,12 @@ export const DataTable: React.FC<DataTableProps> = ({
                 setSearchTerm(e.target.value);
                 setPage(1);
               }}
-              className="bg-slate-900 border border-slate-700 rounded pl-8 pr-2.5 py-1 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-sky-500 font-sans w-36 sm:w-44"
+              className="bg-white border border-nature-border rounded-md pl-8 pr-2.5 py-1 text-xs text-nature-text placeholder-nature-muted focus:outline-none focus:border-nature-forest font-sans w-36 sm:w-44 shadow-xs"
             />
           </div>
 
           {/* Status Filter */}
-          <div className="flex items-center space-x-1 bg-slate-900 border border-slate-700 rounded p-0.5 text-xs font-mono">
+          <div className="flex items-center space-x-1 bg-white border border-nature-border rounded-md p-0.5 text-xs font-mono shadow-xs">
             {(['ALL', 'VALID', 'MISSING_FORECAST'] as const).map((st) => (
               <button
                 key={st}
@@ -139,8 +139,8 @@ export const DataTable: React.FC<DataTableProps> = ({
                 }}
                 className={`px-2 py-0.5 rounded text-[11px] transition-colors ${
                   statusFilter === st
-                    ? 'bg-slate-800 text-slate-100 font-semibold'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-nature-forest text-white font-medium shadow-xs'
+                    : 'text-nature-muted hover:text-nature-text'
                 }`}
               >
                 {st === 'ALL' ? 'All' : st === 'VALID' ? 'Valid' : 'Missing Fc'}
@@ -151,10 +151,10 @@ export const DataTable: React.FC<DataTableProps> = ({
           {/* Export CSV Button */}
           <button
             onClick={exportCsv}
-            className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-sans transition-colors"
+            className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-nature-forest hover:bg-nature-forest-hover text-white text-xs font-sans transition-colors shadow-sm"
             title="Download CSV file of displayed observations"
           >
-            <Download className="w-3.5 h-3.5 text-sky-400" />
+            <Download className="w-3.5 h-3.5" />
             <span>Export CSV</span>
           </button>
         </div>
@@ -163,54 +163,54 @@ export const DataTable: React.FC<DataTableProps> = ({
       {/* Table Content */}
       <div className="overflow-x-auto">
         <table className="w-full text-left text-xs font-mono">
-          <thead className="bg-[#0a0f1d] text-slate-400 border-b border-slate-800">
+          <thead className="bg-nature-bg text-nature-muted border-b border-nature-border">
             <tr>
               <th
                 onClick={() => handleSort('settlement_period')}
-                className="py-2.5 px-3 font-medium text-[11px] cursor-pointer hover:text-slate-200 select-none"
+                className="py-2.5 px-3 font-medium text-[11px] cursor-pointer hover:text-nature-text select-none"
               >
                 <div className="flex items-center space-x-1">
                   <span>SP</span>
-                  <ArrowUpDown className="w-3 h-3 text-slate-500" />
+                  <ArrowUpDown className="w-3 h-3 text-nature-muted" />
                 </div>
               </th>
               <th className="py-2.5 px-3 font-medium text-[11px]">Delivery Time (London)</th>
               <th className="py-2.5 px-3 font-medium text-[11px]">Delivery Time (UTC)</th>
               <th
                 onClick={() => handleSort('actual_generation_mw')}
-                className="py-2.5 px-3 font-medium text-[11px] text-right cursor-pointer hover:text-slate-200 select-none text-emerald-400"
+                className="py-2.5 px-3 font-medium text-[11px] text-right cursor-pointer hover:text-nature-text select-none text-nature-actual"
               >
                 <div className="flex items-center justify-end space-x-1">
                   <span>Actual (MW)</span>
-                  <ArrowUpDown className="w-3 h-3 text-slate-500" />
+                  <ArrowUpDown className="w-3 h-3 text-nature-muted" />
                 </div>
               </th>
               <th
                 onClick={() => handleSort('forecast_generation_mw')}
-                className="py-2.5 px-3 font-medium text-[11px] text-right cursor-pointer hover:text-slate-200 select-none text-sky-400"
+                className="py-2.5 px-3 font-medium text-[11px] text-right cursor-pointer hover:text-nature-text select-none text-nature-forecast"
               >
                 <div className="flex items-center justify-end space-x-1">
                   <span>Forecast (MW)</span>
-                  <ArrowUpDown className="w-3 h-3 text-slate-500" />
+                  <ArrowUpDown className="w-3 h-3 text-nature-muted" />
                 </div>
               </th>
               <th
                 onClick={() => handleSort('error_mw')}
-                className="py-2.5 px-3 font-medium text-[11px] text-right cursor-pointer hover:text-slate-200 select-none"
+                className="py-2.5 px-3 font-medium text-[11px] text-right cursor-pointer hover:text-nature-text select-none"
               >
                 <div className="flex items-center justify-end space-x-1">
                   <span>Error (MW)</span>
-                  <ArrowUpDown className="w-3 h-3 text-slate-500" />
+                  <ArrowUpDown className="w-3 h-3 text-nature-muted" />
                 </div>
               </th>
               <th className="py-2.5 px-3 font-medium text-[11px]">Forecast Published</th>
               <th className="py-2.5 px-3 font-medium text-[11px] text-center">Status</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/80">
+          <tbody className="divide-y divide-nature-border">
             {paginatedPoints.length === 0 ? (
               <tr>
-                <td colSpan={8} className="py-8 text-center text-slate-500 italic">
+                <td colSpan={8} className="py-8 text-center text-nature-muted italic">
                   No matching settlement observations found.
                 </td>
               </tr>
@@ -218,41 +218,41 @@ export const DataTable: React.FC<DataTableProps> = ({
               paginatedPoints.map((p) => {
                 const err = p.error_mw;
                 return (
-                  <tr key={p.settlement_period} className="hover:bg-slate-850/50 transition-colors">
-                    <td className="py-2 px-3 font-bold text-slate-300 tabular-nums">
+                  <tr key={p.settlement_period} className="hover:bg-nature-bg/60 transition-colors">
+                    <td className="py-2 px-3 font-bold text-nature-text tabular-nums">
                       {p.settlement_period}
                     </td>
-                    <td className="py-2 px-3 text-slate-200 font-sans">
+                    <td className="py-2 px-3 text-nature-text font-sans">
                       {p.start_time_local}
                     </td>
-                    <td className="py-2 px-3 text-slate-500 text-[11px]">
+                    <td className="py-2 px-3 text-nature-muted text-[11px]">
                       {p.start_time}
                     </td>
-                    <td className="py-2 px-3 text-right text-emerald-400 font-bold tabular-nums">
+                    <td className="py-2 px-3 text-right text-nature-actual font-bold tabular-nums">
                       {p.actual_generation_mw !== null ? `${p.actual_generation_mw.toLocaleString()} MW` : '-'}
                     </td>
-                    <td className="py-2 px-3 text-right text-sky-400 font-bold tabular-nums">
+                    <td className="py-2 px-3 text-right text-nature-forecast font-bold tabular-nums">
                       {p.forecast_generation_mw !== null ? `${p.forecast_generation_mw.toLocaleString()} MW` : '-'}
                     </td>
                     <td className="py-2 px-3 text-right font-bold tabular-nums">
                       {err !== null ? (
-                        <span className={err > 0 ? 'text-amber-400' : err < 0 ? 'text-sky-300' : 'text-slate-400'}>
+                        <span className={err > 0 ? 'text-nature-risk' : err < 0 ? 'text-nature-forecast' : 'text-nature-muted'}>
                           {err > 0 ? `+` : ''}{err.toLocaleString()} MW
                         </span>
                       ) : (
-                        <span className="text-slate-600">-</span>
+                        <span className="text-nature-muted/60">-</span>
                       )}
                     </td>
-                    <td className="py-2 px-3 text-slate-400 text-[11px]">
+                    <td className="py-2 px-3 text-nature-muted text-[11px]">
                       {p.forecast_publish_time_local || 'N/A'}
                     </td>
                     <td className="py-2 px-3 text-center">
                       {p.is_valid_pair ? (
-                        <span className="inline-flex items-center text-emerald-400 text-[11px]">
+                        <span className="inline-flex items-center text-nature-actual text-[11px]">
                           <CheckCircle2 className="w-3 h-3 mr-1" /> VALID
                         </span>
                       ) : (
-                        <span className="inline-flex items-center text-amber-400 text-[11px]">
+                        <span className="inline-flex items-center text-nature-risk text-[11px]">
                           <AlertTriangle className="w-3 h-3 mr-1" /> {p.status}
                         </span>
                       )}
@@ -266,7 +266,7 @@ export const DataTable: React.FC<DataTableProps> = ({
       </div>
 
       {/* Pagination Footer */}
-      <div className="p-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400 font-mono bg-slate-900/60">
+      <div className="p-3 border-t border-nature-border flex items-center justify-between text-xs text-nature-muted font-mono bg-nature-bg">
         <div>
           Showing {paginatedPoints.length > 0 ? (page - 1) * pageSize + 1 : 0} to{' '}
           {Math.min(page * pageSize, sortedPoints.length)} of {sortedPoints.length} records
@@ -276,7 +276,7 @@ export const DataTable: React.FC<DataTableProps> = ({
           <button
             onClick={() => setPage((p) => Math.max(p - 1, 1))}
             disabled={page === 1}
-            className="p-1 rounded bg-slate-800 text-slate-300 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed border border-slate-700"
+            className="p-1 rounded-md bg-white text-nature-text hover:bg-nature-bg disabled:opacity-30 disabled:cursor-not-allowed border border-nature-border shadow-xs"
             title="Previous Page"
           >
             <ChevronLeft className="w-4 h-4" />
@@ -287,7 +287,7 @@ export const DataTable: React.FC<DataTableProps> = ({
           <button
             onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
             disabled={page === totalPages}
-            className="p-1 rounded bg-slate-800 text-slate-300 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed border border-slate-700"
+            className="p-1 rounded-md bg-white text-nature-text hover:bg-nature-bg disabled:opacity-30 disabled:cursor-not-allowed border border-nature-border shadow-xs"
             title="Next Page"
           >
             <ChevronRight className="w-4 h-4" />

@@ -35,20 +35,20 @@ export const ProcurementExposurePage: React.FC = () => {
   return (
     <div className="space-y-4">
       {/* Control Header Ribbon */}
-      <div className="rounded-lg border border-slate-800 bg-[#0e1526] p-3.5 space-y-3">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-2.5 border-b border-slate-800 gap-2">
+      <div className="rounded-lg border border-nature-border bg-white p-3.5 space-y-3 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-2.5 border-b border-nature-border gap-2">
           <div>
-            <h2 className="text-base font-semibold text-slate-100">
+            <h2 className="text-base font-semibold text-nature-text">
               Day-Ahead Procurement Exposure &amp; Physical Balancing Analytics
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-nature-muted mt-0.5">
               Translating wind power forecast uncertainty into energy imbalance volume (MWh) and cash-out settlement risk under BSC Section T
             </p>
           </div>
 
           <div className="flex items-center space-x-2 text-xs font-mono">
-            <span className="px-2.5 py-1 rounded bg-slate-900 border border-slate-800 text-slate-300">
-              Delivery Date: <strong className="text-slate-100">{selectedDate}</strong>
+            <span className="px-2.5 py-1 rounded-md bg-nature-bg border border-nature-border text-nature-text font-medium">
+              Delivery Date: <strong className="text-nature-forest">{selectedDate}</strong>
             </span>
           </div>
         </div>
@@ -93,35 +93,35 @@ export const ProcurementExposurePage: React.FC = () => {
           />
 
           {/* Half-Hourly Exposure Breakdown Table */}
-          <div className="rounded-lg border border-slate-800 bg-[#0e1526] overflow-hidden space-y-0">
-            <div className="p-3.5 border-b border-slate-800 flex justify-between items-center bg-slate-900/60">
+          <div className="rounded-lg border border-nature-border bg-white overflow-hidden space-y-0 shadow-sm">
+            <div className="p-3.5 border-b border-nature-border flex justify-between items-center bg-nature-bg">
               <div>
-                <h3 className="text-sm font-semibold text-slate-100">
+                <h3 className="text-sm font-semibold text-nature-text">
                   Half-Hourly Physical Imbalance Schedule (48 Settlement Periods)
                 </h3>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="text-xs text-nature-muted mt-0.5">
                   Energy volume exposure computed as Power Deviation (MW) &times; 0.5 hours = Interval MWh
                 </p>
               </div>
-              <span className="text-xs text-slate-400 font-mono">
+              <span className="text-xs text-nature-muted font-mono">
                 {data.selected_date} Delivery
               </span>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs font-mono">
-                <thead className="bg-[#0a0f1d] text-slate-400 border-b border-slate-800">
+                <thead className="bg-nature-bg text-nature-muted border-b border-nature-border">
                   <tr>
                     <th className="py-2.5 px-3 font-medium text-[11px]">SP</th>
                     <th className="py-2.5 px-3 font-medium text-[11px]">Time (London GMT)</th>
-                    <th className="py-2.5 px-3 font-medium text-[11px] text-right text-emerald-400">Actual Outturn</th>
-                    <th className="py-2.5 px-3 font-medium text-[11px] text-right text-sky-400">Selected Forecast</th>
+                    <th className="py-2.5 px-3 font-medium text-[11px] text-right text-nature-actual">Actual Outturn</th>
+                    <th className="py-2.5 px-3 font-medium text-[11px] text-right text-nature-forecast">Selected Forecast</th>
                     <th className="py-2.5 px-3 font-medium text-[11px] text-right">Power Delta (MW)</th>
-                    <th className="py-2.5 px-3 font-medium text-[11px] text-right text-slate-100">Interval Energy (MWh)</th>
+                    <th className="py-2.5 px-3 font-medium text-[11px] text-right text-nature-text">Interval Energy (MWh)</th>
                     <th className="py-2.5 px-3 font-medium text-[11px] text-center">Portfolio Position</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/80">
+                <tbody className="divide-y divide-nature-border">
                   {data.generation_series.map((p) => {
                     const err = p.error_mw;
                     const energyMwh = err !== null ? err * 0.5 : null;
@@ -129,44 +129,44 @@ export const ProcurementExposurePage: React.FC = () => {
                     const isLong = err !== null && err < 0;
 
                     return (
-                      <tr key={p.settlement_period} className="hover:bg-slate-850/50 transition-colors">
-                        <td className="py-2 px-3 font-bold text-slate-300 tabular-nums">{p.settlement_period}</td>
-                        <td className="py-2 px-3 text-slate-200 font-sans">{p.start_time_local.split(' ')[1] || p.start_time_local}</td>
-                        <td className="py-2 px-3 text-right text-emerald-400 font-bold tabular-nums">
+                      <tr key={p.settlement_period} className="hover:bg-nature-bg/60 transition-colors">
+                        <td className="py-2 px-3 font-bold text-nature-text tabular-nums">{p.settlement_period}</td>
+                        <td className="py-2 px-3 text-nature-text font-sans">{p.start_time_local.split(' ')[1] || p.start_time_local}</td>
+                        <td className="py-2 px-3 text-right text-nature-actual font-bold tabular-nums">
                           {p.actual_generation_mw !== null ? `${p.actual_generation_mw.toLocaleString()} MW` : 'Missing'}
                         </td>
-                        <td className="py-2 px-3 text-right text-sky-400 font-bold tabular-nums">
+                        <td className="py-2 px-3 text-right text-nature-forecast font-bold tabular-nums">
                           {p.forecast_generation_mw !== null ? `${p.forecast_generation_mw.toLocaleString()} MW` : 'Missing'}
                         </td>
                         <td className="py-2 px-3 text-right font-bold tabular-nums">
                           {err !== null ? (
-                            <span className={isShort ? 'text-amber-400' : isLong ? 'text-sky-300' : 'text-slate-400'}>
+                            <span className={isShort ? 'text-nature-risk' : isLong ? 'text-nature-forecast' : 'text-nature-muted'}>
                               {err > 0 ? `+` : ''}{err.toLocaleString()} MW
                             </span>
                           ) : (
-                            <span className="text-slate-600">-</span>
+                            <span className="text-nature-muted/60">-</span>
                           )}
                         </td>
-                        <td className="py-2 px-3 text-right font-bold text-slate-100 tabular-nums">
+                        <td className="py-2 px-3 text-right font-bold text-nature-text tabular-nums">
                           {energyMwh !== null ? (
-                            <span className={isShort ? 'text-amber-400' : isLong ? 'text-sky-300' : 'text-slate-300'}>
+                            <span className={isShort ? 'text-nature-risk' : isLong ? 'text-nature-forecast' : 'text-nature-text'}>
                               {energyMwh > 0 ? `+` : ''}{energyMwh.toFixed(1)} MWh
                             </span>
                           ) : (
-                            <span className="text-slate-600">-</span>
+                            <span className="text-nature-muted/60">-</span>
                           )}
                         </td>
                         <td className="py-2 px-3 text-center">
                           {isShort ? (
-                            <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-amber-950/80 text-amber-300 border border-amber-800/80 font-sans">
-                              <TrendingUp className="w-3 h-3 text-amber-400" /> SHORT (Deficit)
+                            <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md bg-nature-risk-light text-nature-risk border border-nature-risk/40 font-sans">
+                              <TrendingUp className="w-3 h-3 text-nature-risk" /> SHORT (Deficit)
                             </span>
                           ) : isLong ? (
-                            <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-sky-950/80 text-sky-300 border border-sky-800/80 font-sans">
-                              <TrendingDown className="w-3 h-3 text-sky-400" /> LONG (Surplus)
+                            <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md bg-nature-forest-light text-nature-forest border border-nature-forest/40 font-sans">
+                              <TrendingDown className="w-3 h-3 text-nature-forest" /> LONG (Surplus)
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700 font-sans">
+                            <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md bg-nature-bg text-nature-muted border border-nature-border font-sans">
                               Balanced
                             </span>
                           )}
